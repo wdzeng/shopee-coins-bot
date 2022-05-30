@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import {
-  Builder, By, IWebDriverOptionsCookie, until, WebDriver,
+  Builder, By, IWebDriverOptionsCookie, until, WebDriver, error
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
@@ -15,11 +15,23 @@ const txtReceiveCoin = '今日簽到獲得 '
 const txtCoinAlreadyReceived = '明天再回來領取 '
 const txtTooMuchTry = '很抱歉，您的操作次數過多，請稍後再試。'
 const txtShopeeReward = '蝦幣獎勵'
-
 const waitTimeout = 2 * 60 * 1000 // 2 minutes
 
+// exit code:
+// - 0: success
+// - 1: already received
+// - 5: need SMS authentication
+// - 33: cannot solve the puzzle
+// - 44: operation timeout exceeded
+// - 87: missing or wrong username/password
+// - 69: too much try
+// - 255: unknown error occurred
+
+type LoginResult = 0 | 5 | 33 | 44 | 87 | 69 | 255
+
 export default class TaiwanShopeeBot {
-  private driver: WebDriver | undefined = undefined
+  // @ts-ignore
+  private driver: WebDriver
 
   constructor(
     private username: string | undefined,
@@ -27,11 +39,14 @@ export default class TaiwanShopeeBot {
     private pathCookie: string | undefined
   ) { }
 
-  private async tryLogin(): Promise<0 | 1> {
-    logger.info('Check if logged in.')
-    this.driver.get(urlLogin)
+  private async tryLogin(): Promise<LoginResult> {
+    logger.debug('Start to check if user is already logged in.')
+    await this.driver.get(urlLogin)
+    // Wait for redirecting (5s)
+    await new Promise(res => setTimeout(res, 5000))
 
     const curUrl = await this.driver.getCurrentUrl()
+    logger.debug('Current at url: ' + curUrl)
     if (curUrl === urlCoin) {
       // Already logged in.
       logger.info('Already logged in.')
@@ -41,7 +56,7 @@ export default class TaiwanShopeeBot {
     // Not logged in; try to login by password.
     if (!this.username || !this.password) {
       logger.error('Failed to login. Missing username or password.')
-      process.exit(87)
+      return 87
     }
 
     logger.info('Try to login by username and password.')
@@ -77,29 +92,28 @@ export default class TaiwanShopeeBot {
 
     if (text === txtWrongPassword) {
       logger.error('Login failed: wrong password.')
-      process.exit(87)
+      return 87
     }
     if (text === txtTooMuchTry) {
       logger.error('Login failed: too much try.')
-      process.exit(69)
+      return 69
     }
     if (text === txtPlayPuzzle) {
       logger.debug('Login failed: I cannot solve the puzzle.')
-      return 1
+      return 33
     }
     if (text === txtUseLink) {
-      logger.debug('Login failed: please use the link.')
-      return 1
+      logger.debug('Login failed: please login via SMS.')
+      return 5
     }
 
     // Unknown error
     logger.error('Login failed. Unexpected error occurred.')
     logger.debug(`Unexpected error occurred: ${text}`)
-    process.exit(255)
-    return 0 // never reach
+    return 255
   }
 
-  private async tryReceiveCoin() {
+  private async tryReceiveCoin(): Promise<0 | 1> {
     const xpath = `${xpathByText('button', txtReceiveCoin)} | ${xpathByText('button', txtCoinAlreadyReceived)}`
     await this.driver.wait(until.elementLocated(By.xpath(xpath)), waitTimeout)
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
@@ -108,8 +122,8 @@ export default class TaiwanShopeeBot {
     const text = await btnReceiveCoin.getText()
     if (text.startsWith(txtCoinAlreadyReceived)) {
       // Already received
-      logger.error('You have already received coin today.')
-      return 2
+      logger.info('You have already received coin today.')
+      return 1
     }
 
     await btnReceiveCoin.click()
@@ -119,66 +133,70 @@ export default class TaiwanShopeeBot {
     return 0
   }
 
-  private async tryLoginWithSmsLink(): Promise<0> {
+  private async tryLoginWithSmsLink(): Promise<void> {
     // Wait until the '使用連結驗證' is available.
     await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txtUseLink))), waitTimeout)
 
     // Click the '使用連結驗證' button.
     const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txtUseLink)))
     await btnLoginWithLink.click()
-    logger.info('Please click the link sent to your mobile.')
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
-    await this.driver.wait(until.urlIs(urlCoin), waitTimeout)
-    // TODO: check if login is denied.
+    logger.info('An SMS message is sent to your mobile. Please click the link in 10 minutes. I will wait for you...')
+    try {
+      await this.driver.wait(until.urlIs(urlCoin), 10 * 60 * 1000) // timeout is 10min
+    } catch (e: unknown) {
+      if (e instanceof error.TimeoutError) {
+        logger.error('You are too slow. Bye bye.')
+      }
+      throw e
+    }
 
+    // TODO: check if login is denied.
     logger.info('Login permitted.')
-    return 0
   }
 
-  private async saveCookies() {
+  private async saveCookies(): Promise<void> {
     logger.debug('Start to save cookie.')
+
     try {
       const cookies = await this.driver.manage().getCookies()
-      await fs.writeFile(this.pathCookie, JSON.stringify(cookies))
+      await fs.writeFile(this.pathCookie!, JSON.stringify(cookies))
       logger.info('Cookie saved.')
     } catch (e: unknown) {
+      // suppress error.
       if (e instanceof Error) {
-        logger.error('Failed to save cookie: ' + e.message)
+        logger.warn('Failed to save cookie: ' + e.message)
       }
       else {
-        logger.error('Failed to save cookie.')
+        logger.warn('Failed to save cookie.')
       }
     }
   }
 
-  private async loadCookiesIfExists() {
-    if (!this.pathCookie) {
-      // Cookie path not given so cannot load cookies.
-      logger.info('No cookies given. Will try to login using username and password.')
-      return
-    }
+  private async loadCookies(): Promise<void> {
+    logger.debug('Start to load cookies.')
 
     // Try to load cookies.
     try {
-      const cookiesStr = await fs.readFile(this.pathCookie, 'utf-8')
+      const cookiesStr = await fs.readFile(this.pathCookie!, 'utf-8')
       const cookies: IWebDriverOptionsCookie[] = JSON.parse(cookiesStr)
-      cookies.forEach((cookie) => this.driver.manage().addCookie(cookie))
+      const tasks = cookies.map((cookie) => this.driver.manage().addCookie(cookie))
+      await Promise.all(tasks)
+      logger.info('Cookies loaded.')
     } catch (e: unknown) {
       // Cannot load cookies; ignore. This may be due to invalid cookie string
       // pattern.
-      logger.debug('Failed to load cookies. Will try to login using username and password.')
       if (e instanceof Error) {
-        logger.debug(e.message)
+        logger.debug('Failed to load cookies: ' + e.message)
       }
+      logger.debug('Failed to load cookies.')
     }
   }
 
-  private async initDriver() {
-    if (this.driver !== undefined) return
-
+  private async initDriver(): Promise<void> {
     const options = new chrome.Options()
     options
       .addArguments('--headless')
@@ -195,39 +213,55 @@ export default class TaiwanShopeeBot {
       .build()
   }
 
-  async run(smsLogin: boolean) {
+  async run(smsLogin: boolean): Promise<number> {
     await this.initDriver()
 
     try {
       if (this.pathCookie !== undefined) {
-        await this.loadCookiesIfExists()
+        await this.loadCookies()
+      }
+      else {
+        logger.info('No cookies given. Will try to login using username and password.')
       }
 
-      let result = await this.tryLogin()
-      if (result === 1) {
+      let result: number = await this.tryLogin()
+      if (result === 5) {
         // Login failed. Try use the SMS link to login.
-
         if (smsLogin) {
-          result = await this.tryLoginWithSmsLink()
+          await this.tryLoginWithSmsLink()
+          result = 0
         }
         else {
-          logger.error('Required SMS login.')
-          process.exit(22)
+          logger.error('SMS authentication is required.')
+          return result
         }
       }
+
+      if (result !== 0) {
+        // Failed to login.
+        return result
+      }
+
       // Now we are logged in.
 
-      // Save the cookie.
+      // Save cookies.
       if (this.pathCookie !== undefined) {
-        await this.saveCookies()
+        await this.saveCookies() // never raise error
       }
 
       // Receive coins.
       return await this.tryReceiveCoin()
     }
+    catch (e: unknown) {
+      if (e instanceof error.TimeoutError) {
+        logger.error('Operation timeout exceeded.')
+        return 44
+      }
+      // Unknown error.
+      throw e
+    }
     finally {
       await this.driver.close()
-      this.driver = undefined
     }
   }
 }
