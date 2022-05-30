@@ -13,7 +13,7 @@ const txtPlayPuzzle = '點擊以重新載入頁面'
 const txtUseLink = '使用連結驗證'
 const txtReceiveCoin = '今日簽到獲得 '
 const txtCoinAlreadyReceived = '明天再回來領取 '
-const txtTooMuchTry = '很抱歉，您的操作次數過多，請稍後再試。'
+const txtTooMuchTry = '哎呀! 您已達到今日驗證次數上限。'
 const txtShopeeReward = '蝦幣獎勵'
 const waitTimeout = 2 * 60 * 1000 // 2 minutes
 
@@ -43,7 +43,7 @@ export default class TaiwanShopeeBot {
     logger.debug('Start to check if user is already logged in.')
     await this.driver.get(urlLogin)
     // Wait for redirecting (5s)
-    await new Promise(res => setTimeout(res, 5000))
+    await new Promise(res => setTimeout(res, 3*3600*1000))
 
     const curUrl = await this.driver.getCurrentUrl()
     logger.debug('Current at url: ' + curUrl)
@@ -94,10 +94,10 @@ export default class TaiwanShopeeBot {
       logger.error('Login failed: wrong password.')
       return 87
     }
-    if (text === txtTooMuchTry) {
-      logger.error('Login failed: too much try.')
-      return 69
-    }
+    // if (text === txtTooMuchTry) {
+    //   logger.error('Login failed: too much try.')
+    //   return 69
+    // }
     if (text === txtPlayPuzzle) {
       logger.debug('Login failed: I cannot solve the puzzle.')
       return 33
@@ -140,6 +140,10 @@ export default class TaiwanShopeeBot {
     // Click the '使用連結驗證' button.
     const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txtUseLink)))
     await btnLoginWithLink.click()
+
+    // Check if reach daily limit.
+    const text = By.xpath(xpathByText('div', txtTooMuchTry + 'sdfas'))
+    console.log(text)
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
