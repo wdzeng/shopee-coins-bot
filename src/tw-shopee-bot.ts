@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import {
-  Builder, By, IWebDriverOptionsCookie, until, WebDriver, error
+  Builder, By, IWebDriverOptionsCookie, until, WebDriver, error, Browser
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
@@ -8,26 +8,22 @@ import { xpathByText } from './util'
 
 const urlLogin = 'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
 const urlCoin = 'https://shopee.tw/shopee-coins'
-const txtWrongPassword = '你的帳號或密碼不正確，請稍後再試'
+const txtWrongPassword = '你的帳號或密碼不正確，請再試一次'
 const txtPlayPuzzle = '點擊以重新載入頁面'
 const txtUseLink = '使用連結驗證'
-const txtReceiveCoin = '今日簽到獲得 '
-const txtCoinAlreadyReceived = '明天再回來領取 '
-const txtTooMuchTry = '哎呀! 您已達到今日驗證次數上限。'
+const txtReceiveCoin = '今日簽到獲得'
+const txtTooMuchTry = '您已達到今日驗證次數上限。'
 const txtShopeeReward = '蝦幣獎勵'
+const txtCoinReceived = '明天再回來領取'
 const waitTimeout = 2 * 60 * 1000 // 2 minutes
 
-// exit code:
-// - 0: success
-// - 1: already received
-// - 5: need SMS authentication
-// - 33: cannot solve the puzzle
-// - 44: operation timeout exceeded
-// - 87: missing or wrong username/password
-// - 69: too much try
-// - 255: unknown error occurred
-
-type LoginResult = 0 | 5 | 33 | 44 | 87 | 69 | 255
+export const EXIT_CODE_SUCCESS = 0
+export const EXIT_CODE_ALREADY_RECEIVED = 1
+export const EXIT_CODE_NEED_SMS_AUTH = 2
+export const EXIT_CODE_CANNOT_SOLVE_PUZZLE = 3
+export const EXIT_CODE_OPERATIME_TIMEOUT_EXCEEDED = 4
+export const EXIT_CODE_TOO_MUCH_TRY = 69
+export const EXIT_CODE_WRONG_PASSWORD = 87
 
 export default class TaiwanShopeeBot {
   // @ts-ignore
@@ -39,24 +35,24 @@ export default class TaiwanShopeeBot {
     private pathCookie: string | undefined
   ) { }
 
-  private async tryLogin(): Promise<LoginResult> {
+  private async tryLogin(): Promise<number | undefined> {
     logger.debug('Start to check if user is already logged in.')
     await this.driver.get(urlLogin)
     // Wait for redirecting (5s)
-    await new Promise(res => setTimeout(res, 3*3600*1000))
+    // await new Promise(res => setTimeout(res, 3 * 3600 * 1000))
 
     const curUrl = await this.driver.getCurrentUrl()
     logger.debug('Current at url: ' + curUrl)
     if (curUrl === urlCoin) {
       // Already logged in.
       logger.info('Already logged in.')
-      return 0
+      return
     }
 
     // Not logged in; try to login by password.
     if (!this.username || !this.password) {
       logger.error('Failed to login. Missing username or password.')
-      return 87
+      return EXIT_CODE_WRONG_PASSWORD
     }
 
     logger.info('Try to login by username and password.')
@@ -86,54 +82,53 @@ export default class TaiwanShopeeBot {
     const text = await result.getText()
 
     if (text === txtShopeeReward) {
+      // success
       logger.info('Login succeeded.')
-      return 0
+      return
     }
-
     if (text === txtWrongPassword) {
+      // invalid password
       logger.error('Login failed: wrong password.')
-      return 87
+      return EXIT_CODE_WRONG_PASSWORD
     }
-    // if (text === txtTooMuchTry) {
-    //   logger.error('Login failed: too much try.')
-    //   return 69
-    // }
     if (text === txtPlayPuzzle) {
-      logger.debug('Login failed: I cannot solve the puzzle.')
-      return 33
+      // TODO: not know if this occurred in 2022/05
+      // need to play puzzle
+      logger.error('Login failed: I cannot solve the puzzle.')
+      return EXIT_CODE_CANNOT_SOLVE_PUZZLE
     }
     if (text === txtUseLink) {
-      logger.debug('Login failed: please login via SMS.')
-      return 5
+      // need to authenticate via SMS link
+      logger.warn('Login failed: please login via SMS.')
+      return EXIT_CODE_NEED_SMS_AUTH
     }
 
     // Unknown error
-    logger.error('Login failed. Unexpected error occurred.')
-    logger.debug(`Unexpected error occurred: ${text}`)
-    return 255
+    logger.debug(`Unexpected error occurred. Fetched text by xpath: ${text}`)
+    throw new Error('Unknown error occurred when trying to login.')
   }
 
-  private async tryReceiveCoin(): Promise<0 | 1> {
-    const xpath = `${xpathByText('button', txtReceiveCoin)} | ${xpathByText('button', txtCoinAlreadyReceived)}`
+  private async tryReceiveCoin(): Promise<number> {
+    const xpath = `${xpathByText('button', txtReceiveCoin)} | ${xpathByText('button', txtCoinReceived)}`
     await this.driver.wait(until.elementLocated(By.xpath(xpath)), waitTimeout)
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
 
     // Check if coin is already received today
     const text = await btnReceiveCoin.getText()
-    if (text.startsWith(txtCoinAlreadyReceived)) {
+    if (text.startsWith(txtCoinReceived)) {
       // Already received
-      logger.info('You have already received coin today.')
-      return 1
+      logger.info('Coin already received.')
+      return EXIT_CODE_ALREADY_RECEIVED
     }
 
     await btnReceiveCoin.click()
-    // TODO: Wait until the click takes effect
+    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('button', txtCoinReceived))))
 
     logger.info('Coin received.')
-    return 0
+    return EXIT_CODE_SUCCESS
   }
 
-  private async tryLoginWithSmsLink(): Promise<void> {
+  private async tryLoginWithSmsLink(): Promise<number | undefined> {
     // Wait until the '使用連結驗證' is available.
     await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txtUseLink))), waitTimeout)
 
@@ -141,9 +136,16 @@ export default class TaiwanShopeeBot {
     const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txtUseLink)))
     await btnLoginWithLink.click()
 
+    // Wait until the page is redirect
+    await this.driver.wait(until.urlIs('https://shopee.tw/verify/link'))
+
     // Check if reach daily limit.
-    const text = By.xpath(xpathByText('div', txtTooMuchTry + 'sdfas'))
-    console.log(text)
+    const reachLimit = await this.driver.findElements(By.xpath(xpathByText('div', txtTooMuchTry)))
+    if (reachLimit.length > 0) {
+      // Failed because reach limit.
+      logger.error('Cannot use SMS link to login: reach daily limits.')
+      return EXIT_CODE_TOO_MUCH_TRY
+    }
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
@@ -160,6 +162,7 @@ export default class TaiwanShopeeBot {
 
     // TODO: check if login is denied.
     logger.info('Login permitted.')
+    return
   }
 
   private async saveCookies(): Promise<void> {
@@ -196,28 +199,32 @@ export default class TaiwanShopeeBot {
       if (e instanceof Error) {
         logger.debug('Failed to load cookies: ' + e.message)
       }
-      logger.debug('Failed to load cookies.')
+      else {
+        logger.debug('Failed to load cookies.')
+      }
     }
   }
 
   private async initDriver(): Promise<void> {
     const options = new chrome.Options()
     options
-      .addArguments('--headless')
       .addArguments('--start-maximized')
-      .addArguments('--disable-infobars') // cspell:disable-line
+      .addArguments('--headless')
       .addArguments('--disable-extensions')
       .addArguments('--no-sandbox')
       .addArguments('--disable-dev-shm-usage')
-      .addArguments('--remote-debugging-port=9224')
+      .addArguments('--disable-gpu')
+    if (process.env['DEBUG']) {
+      options.addArguments('--remote-debugging-port=9222')
+    }
 
     this.driver = await new Builder()
-      .forBrowser('chrome')
+      .forBrowser(Browser.CHROME)
       .setChromeOptions(options)
       .build()
   }
 
-  async run(smsLogin: boolean): Promise<number> {
+  async run(disableSmsLogin: boolean): Promise<number> {
     await this.initDriver()
 
     try {
@@ -228,20 +235,19 @@ export default class TaiwanShopeeBot {
         logger.info('No cookies given. Will try to login using username and password.')
       }
 
-      let result: number = await this.tryLogin()
-      if (result === 5) {
+      let result: number | undefined = await this.tryLogin()
+      if (result === EXIT_CODE_NEED_SMS_AUTH) {
         // Login failed. Try use the SMS link to login.
-        if (smsLogin) {
-          await this.tryLoginWithSmsLink()
-          result = 0
-        }
-        else {
+        if (disableSmsLogin) {
           logger.error('SMS authentication is required.')
           return result
         }
+        else {
+          result = await this.tryLoginWithSmsLink()
+        }
       }
 
-      if (result !== 0) {
+      if (result !== undefined) {
         // Failed to login.
         return result
       }
@@ -259,7 +265,7 @@ export default class TaiwanShopeeBot {
     catch (e: unknown) {
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        return 44
+        return EXIT_CODE_OPERATIME_TIMEOUT_EXCEEDED
       }
       // Unknown error.
       throw e

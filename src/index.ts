@@ -4,9 +4,7 @@ import { ArgumentParser } from 'argparse'
 import logger from 'loglevel'
 import Bot from './tw-shopee-bot'
 
-if (process.env['DEBUG'] !== undefined) {
-  logger.setDefaultLevel('debug')
-}
+logger.setDefaultLevel(process.env['DEBUG'] ? 'debug' : 'info')
 
 const parser = new ArgumentParser({ description: 'Get shopee coins' })
 parser.add_argument('-u', '--user', { help: 'Shopee username.' });
@@ -14,8 +12,8 @@ parser.add_argument('-P', '--path-to-pass', { help: 'File which stores password.
 parser.add_argument('-p', '--pass', { help: 'Shopee password. This overrides `-P`.' });
 parser.add_argument('-c', '--cookie', { help: 'Path to cookies.' })
 parser.add_argument('-x', '--no-sms', { help: 'Do not use sms login.', action: 'store_true' })
+parser.add_argument('-f', '--force', { help: 'No error if coins already received.', action: 'store_true' })
 const args = parser.parse_args()
-
 logger.debug(args)
 
 function getUsername(): string | undefined {
@@ -34,10 +32,12 @@ async function getPassword(): Promise<string | undefined> {
     passPath = path.resolve(passPath)
     logger.debug('Try to read password: ' + path)
     try {
-      return await fs.readFile(passPath, 'utf-8')
+      const pass = await fs.readFile(passPath, 'utf-8')
+      logger.debug('Password read from file.')
+      return pass
     } catch (e: any) {
-      logger.error('Failed to read password: ' + path)
-      process.exit(255)
+      logger.error('Failed to read password from file: ' + path)
+      throw e
     }
   }
 
@@ -50,27 +50,20 @@ function getCookies(): string | undefined {
 }
 
 async function main() {
-  const username = getUsername()
-  const password = await getPassword()
-  const cookies = getCookies()
-  const noSmsLogin = args['no_sms']
-
+  const username: string | undefined = getUsername()
+  const password: string | undefined = await getPassword()
+  const cookies: string | undefined = getCookies()
+  const noSmsLogin: boolean = args['no_sms']
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
 
-  try {
-    const bot = new Bot(username, password, cookies)
-    await bot.run(!noSmsLogin)
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      logger.error('Unexpected error: ' + e.message)
-    }
-    else {
-      logger.error('Unexpected error occurred.')
-    }
-    throw e
+  const bot = new Bot(username, password, cookies)
+  let result = await bot.run(noSmsLogin)
+  if (result === 1 && args['force']) {
+    result = 0
   }
+  process.exit(result)
 }
 
 main()
