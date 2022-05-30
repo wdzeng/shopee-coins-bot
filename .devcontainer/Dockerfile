@@ -8,17 +8,18 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y --no-install-recommends unzip
 
-# https://github.com/charlie0227/crawler_shopee/blob/master/Dockerfile
-# install google chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
-    && apt-get -y update && apt-get install -y --no-install-recommends google-chrome-stable
+# Install google chrome
+ARG CHROME_VERSION="98.0.4758.102"
+RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb \
+    && apt-get install -yqq /tmp/chrome.deb \
+    && rm /tmp/chrome.deb
 
-# install chromedriver
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+# Install chromedriver
+RUN wget -qO /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/${CHROME_VERSION}/chromedriver_linux64.zip \
+    && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
+    && rm /tmp/chromedriver.zip
 
-# set display port to avoid crash
+# Set display port to avoid crash
 ENV DISPLAY=:99
 
 ENV PATH /usr/local/bin:$PATH
