@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import logger from 'loglevel'
-import Bot from './tw-shopee-bot'
+import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
@@ -98,11 +98,21 @@ async function main() {
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
 
+  if (!cookies && (!username || !password)) {
+    // Neither cookie nor password is given.
+    logger.error('Failed to login. Missing username or password.')
+    process.exit(EXIT_CODE_WRONG_PASSWORD)
+  }
+
+  // Run bot.
   const bot = new Bot(username, password, cookies)
   let result = await bot.run(noSmsLogin)
+
+  // Update exit code if force is set.
   if (result === 1 && args['force']) {
     result = 0
   }
+
   process.exit(result)
 }
 

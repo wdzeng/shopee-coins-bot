@@ -22,7 +22,7 @@ export const EXIT_CODE_SUCCESS = 0
 export const EXIT_CODE_ALREADY_RECEIVED = 1
 export const EXIT_CODE_NEED_SMS_AUTH = 2
 export const EXIT_CODE_CANNOT_SOLVE_PUZZLE = 3
-export const EXIT_CODE_OPERATIME_TIMEOUT_EXCEEDED = 4
+export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
 export const EXIT_CODE_TOO_MUCH_TRY = 69
 export const EXIT_CODE_WRONG_PASSWORD = 87
 
@@ -268,7 +268,7 @@ export default class TaiwanShopeeBot {
     catch (e: unknown) {
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        return EXIT_CODE_OPERATIME_TIMEOUT_EXCEEDED
+        return EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
       }
       // Unknown error.
       throw e
