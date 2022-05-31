@@ -17,7 +17,8 @@ If `--cookie` is set, the bot tries to login using cookies. Cookies are then upd
 Login with username and password and save the cookies for the first time.
 
 ```sh
-docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:v1 -u username -p password -c /cookie
+docker run -it -v /path/to/somewhere:/cookie \
+    hyperbola/shopee-coins-bot:v1 -u username -p password -c /cookie
 ```
 
 > **Warning**
