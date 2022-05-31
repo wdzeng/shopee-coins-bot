@@ -68,7 +68,7 @@ export default class TaiwanShopeeBot {
     const btnLogin = await this.driver.findElement(By.xpath(xpathByText('button', '登入')))
     // Wait until the login button is enabled.
     await this.driver.wait(until.elementIsEnabled(btnLogin), waitTimeout)
-    await btnLogin.click()
+    btnLogin.click() // do not wait for click since it may hang = =
     logger.debug('Login form submitted.')
 
     // Wait for something happens.
