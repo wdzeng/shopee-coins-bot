@@ -39,8 +39,9 @@ export default class TaiwanShopeeBot {
   private async tryLogin(): Promise<number | undefined> {
     logger.debug('Start to check if user is already logged in.')
     await this.driver.get(urlLogin)
-    
+
     // TODO wait redirect?
+    await new Promise(res => setTimeout(res, 4000))
     const curUrl = await this.driver.getCurrentUrl()
     logger.debug('Current at url: ' + curUrl)
     if (curUrl === urlCoin) {
