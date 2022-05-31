@@ -6,6 +6,7 @@ import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { xpathByText } from './util'
 
+const urlHome = 'https://shopee.tw/'
 const urlLogin = 'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
 const urlCoin = 'https://shopee.tw/shopee-coins'
 const txtWrongPassword = '你的帳號或密碼不正確，請再試一次'
@@ -38,9 +39,8 @@ export default class TaiwanShopeeBot {
   private async tryLogin(): Promise<number | undefined> {
     logger.debug('Start to check if user is already logged in.')
     await this.driver.get(urlLogin)
-    // Wait for redirecting (5s)
-    // await new Promise(res => setTimeout(res, 3 * 3600 * 1000))
-
+    
+    // TODO wait redirect?
     const curUrl = await this.driver.getCurrentUrl()
     logger.debug('Current at url: ' + curUrl)
     if (curUrl === urlCoin) {
@@ -185,6 +185,9 @@ export default class TaiwanShopeeBot {
 
   private async loadCookies(): Promise<void> {
     logger.debug('Start to load cookies.')
+
+    // Connect to dummy page.
+    await this.driver.get(urlHome)
 
     // Try to load cookies.
     try {
