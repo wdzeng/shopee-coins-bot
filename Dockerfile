@@ -1,12 +1,18 @@
-FROM selenium/node-chrome:latest
+FROM zenika/alpine-chrome:99
+
+# Install chrome driver
+USER root
+RUN apk add --no-cache chromium-chromedriver
 
 # Install node
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - \
-    && sudo apt-get install -y nodejs \
-    && sudo rm -rf /var/lib/apt/lists/*
+USER root
+RUN apk add --no-cache nodejs tini
 
+# Source
 COPY dist /app
 
+USER chrome
 WORKDIR /app
-ENTRYPOINT [ "node", "index.js" ]
+ENTRYPOINT [ "tini", "--", "node", "index.js" ]
+
 LABEL description="Get shopee coins everyday."
