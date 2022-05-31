@@ -3,7 +3,7 @@
 Check-in to Shopee and get coins automatically 😀😀
 
 > **Warning**
-> This bot is only tested for Taiwan users, who uses [Shopee Taiwan](https://shopee.tw/).
+> This bot is only tested for Taiwan users, who uses [shopee.tw](https://shopee.tw/).
 
 ## Usage
 
@@ -57,9 +57,9 @@ Shopee password is determined in the following order. The first meet is the fina
 
 ## Login
 
-The bot tries to login user Shopee account in the following order. If the former one fails, the bot tries to use the next one until success.
+The bot tries to login to user's Shopee account in the following order. If the previous one fails, the bot tries the next one until success.
 
 1. saved cookies if given
-2. username and password if both username and password are set
+2. username and password if both given
 
-If `--cookie` is set, the bot tries to login using cookies. Cookies are updated if login succeeded.
+If `--cookie` is set, the bot tries to login using cookies. Cookies are then updated if login succeeded.
