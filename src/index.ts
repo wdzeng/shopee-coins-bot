@@ -1,20 +1,60 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { ArgumentParser } from 'argparse'
 import logger from 'loglevel'
 import Bot from './tw-shopee-bot'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+
+const version = '1.0.1'
+const args = yargs(hideBin(process.argv))
+  .usage('docker run -it hyperbola/shopee-coins-bot:v1 [options]')
+  .options({
+    user: {
+      alias: 'u',
+      description: 'shopee username',
+      requiresArg: true,
+      required: false,
+      type: 'string'
+    },
+    pass: {
+      alias: 'p',
+      description: 'shopee password',
+      requiresArg: true,
+      required: false,
+      type: 'string'
+    },
+    'path-to-pass': {
+      alias: 'P',
+      description: 'password file',
+      requiresArg: true,
+      required: false,
+      type: 'string'
+    },
+    cookie: {
+      alias: 'c',
+      description: 'cookie file',
+      requiresArg: true,
+      required: false,
+      type: 'string'
+    },
+    'no-sms': {
+      alias: 'x',
+      description: 'do not use SMS login',
+      boolean: true,
+      default: false,
+    },
+    force: {
+      alias: 'f',
+      description: 'no error if coins already received',
+      boolean: true,
+      default: false
+    }
+  })
+  .help('help', 'show this message').alias('help', 'h')
+  .version('version', 'show version number', version).alias('version', 'v')
+  .parseSync()
 
 logger.setDefaultLevel(process.env['DEBUG'] ? 'debug' : 'info')
-
-const parser = new ArgumentParser({ description: 'Get shopee coins' })
-parser.add_argument('-u', '--user', { help: 'Shopee username.' });
-parser.add_argument('-P', '--path-to-pass', { help: 'File which stores password.' });
-parser.add_argument('-p', '--pass', { help: 'Shopee password. This overrides `-P`.' });
-parser.add_argument('-c', '--cookie', { help: 'Path to cookies.' })
-parser.add_argument('-x', '--no-sms', { help: 'Do not use sms login.', action: 'store_true' })
-parser.add_argument('-f', '--force', { help: 'No error if coins already received.', action: 'store_true' })
-const args = parser.parse_args()
-logger.debug(args)
 
 function getUsername(): string | undefined {
   return process.env['USERNAME'] || args['user']
@@ -27,7 +67,7 @@ async function getPassword(): Promise<string | undefined> {
   }
 
   // Try to read password from file.
-  let passPath: string | undefined = process.env['PATH_PASS'] || args['path_to_pass']
+  let passPath: string | undefined = process.env['PATH_PASS'] || args['path-to-pass']
   if (passPath) {
     passPath = path.resolve(passPath)
     logger.debug('Try to read password: ' + path)
@@ -53,7 +93,7 @@ async function main() {
   const username: string | undefined = getUsername()
   const password: string | undefined = await getPassword()
   const cookies: string | undefined = getCookies()
-  const noSmsLogin: boolean = args['no_sms']
+  const noSmsLogin: boolean = args['no-sms']
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
