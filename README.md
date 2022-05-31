@@ -7,9 +7,31 @@ Check-in to Shopee and get coins automatically 😀😀
 
 ## Usage
 
+Docker:
+
+```sh
+docker run -it hyperbola/shopee-coins-bot:v1 -u username -p password
+```
+
+Noted that if this is your first login, you may need to authenticate by clicking SMS link.
+
+Help message:
+
 ```sh
 docker run -it hyperbola/shopee-coins-bot:v1 --help
 ```
+
+Exit code:
+
+| Exit code | Description |
+| --------- | ----------- |
+| 0         | Success.    |
+| 1         | User has already received coins today. Returns 0 if `--force` is set. |
+| 2         | SMS authentication is needed but user refuses with `--no-sms`.|
+| 3         | Shopee requires the bot to solve a puzzle, but the bot is too stupid to play it. This occurs if the user login fails too may times. |
+| 4         | Operation timeout exceeded. |
+| 69        | Shopee rejects the login because of too much tries. |
+| 87        | Wrong password. |
 
 ### Options
 
