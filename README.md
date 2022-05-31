@@ -37,12 +37,12 @@ Exit code:
 
 Each option is optional.
 
-`-u`, `--user`: shopee username
-`-p`, `--pass`: shopee password
-`-P`, `--path-to-pass`: shopee password file
-`-c`, `--cookie`: cookie file
-`-x`, `--no-sms`: do not login with SMS; default to `false`
-`-f`, `--force`: no error if coins already received; default to `false`
+- `-u`, `--user`: shopee username
+- `-p`, `--pass`: shopee password
+- `-P`, `--path-to-pass`: shopee password file
+- `-c`, `--cookie`: cookie file
+- `-x`, `--no-sms`: do not login with SMS; default to `false`
+- `-f`, `--force`: no error if coins already received; default to `false`
 
 Shopee username is determined in the following order. The first meet is the final result.
 
