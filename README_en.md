@@ -1,6 +1,6 @@
 # Shopee Coins Bot
 
-[中文](README_en.dm) 👈
+[中文](README.md) 👈
 
 Checkin to Shopee and get coins by CLI 😀😀
 
