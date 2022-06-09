@@ -26,6 +26,12 @@ export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
 export const EXIT_CODE_TOO_MUCH_TRY = 69
 export const EXIT_CODE_WRONG_PASSWORD = 87
 
+interface ShopeeCredential {
+  username: string | undefined
+  password: string | undefined
+  cookies: IWebDriverOptionsCookie[]
+}
+
 export default class TaiwanShopeeBot {
   // @ts-ignore
   private driver: WebDriver
@@ -171,7 +177,13 @@ export default class TaiwanShopeeBot {
 
     try {
       const cookies = await this.driver.manage().getCookies()
-      await fs.writeFile(this.pathCookie!, JSON.stringify(cookies))
+      const json: ShopeeCredential = {
+        username: this.username,
+        password: this.password,
+        cookies
+      }
+
+      await fs.writeFile(this.pathCookie!, JSON.stringify(json))
       logger.info('Cookie saved.')
     } catch (e: unknown) {
       // suppress error.
@@ -193,9 +205,24 @@ export default class TaiwanShopeeBot {
     // Try to load cookies.
     try {
       const cookiesStr = await fs.readFile(this.pathCookie!, 'utf-8')
-      const cookies: IWebDriverOptionsCookie[] = JSON.parse(cookiesStr)
-      const tasks = cookies.map((cookie) => this.driver.manage().addCookie(cookie))
-      await Promise.all(tasks)
+
+      // If the json is an array, then the cookie is generate by bot version
+      // <= 1.2
+      const json: IWebDriverOptionsCookie[] | ShopeeCredential = JSON.parse(cookiesStr)
+      let cookies: IWebDriverOptionsCookie[]
+      if (Array.isArray(json)) {
+        // old version bot (<= 1.2)
+        logger.warn('You are using old version of Shopee Coins Bot. Please update to the newest version.')
+        cookies = json
+      }
+      else {
+        this.username = json.username
+        this.password = json.password
+        cookies = json.cookies
+      }
+
+      const options = this.driver.manage()
+      await Promise.all(cookies.map((cookie) => options.addCookie(cookie)))
       logger.info('Cookies loaded.')
     } catch (e: unknown) {
       // Cannot load cookies; ignore. This may be due to invalid cookie string
