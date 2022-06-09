@@ -1,11 +1,11 @@
 {
   "name": "shopee-bot",
-  "version": "1.0.1",
+  "version": "1.3",
   "description": "A robot that receive shopee coin",
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc -m build src/index.js",
+    "build": "tsc && ncc -m build src/index.js && rm src/*.js",
     "clean": "rm -rf dist src/*.js"
   },
   "keywords": [
