@@ -15,6 +15,10 @@ The bot tries to login to user's Shopee account in the following order.
 
 If argument `--cookie` is set, the bot tries to login with cookies. Cookies are then updated every time a login completes.
 
+> **Warning**
+>
+> Cookies are confidential credentials. Do not share them with others.
+
 ## Usage
 
 Login with username and password for the first time and save cookies for future use.
