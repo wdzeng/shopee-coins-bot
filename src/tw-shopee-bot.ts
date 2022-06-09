@@ -212,7 +212,7 @@ export default class TaiwanShopeeBot {
       let cookies: IWebDriverOptionsCookie[]
       if (Array.isArray(json)) {
         // old version bot (<= 1.2)
-        logger.warn('You are using old version of Shopee Coins Bot. Please update to the newest version.')
+        logger.warn('The cookies are saved by old version shopee coins bot.')
         cookies = json
       }
       else {
