@@ -45,7 +45,7 @@ docker run [-it] \
     hyperbola/shopee-coins-bot:v1 -c /cookies
 ```
 
-### Options
+## Options
 
 Each argument is optional.
 

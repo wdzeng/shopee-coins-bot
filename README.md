@@ -45,8 +45,6 @@ docker run -it -v /path/to/somewhere:/cookie \
 docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:v1 -c /cookie
 ```
 
-## 概念
-
 ## 參數
 
 所有參數都是選填。
