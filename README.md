@@ -89,3 +89,9 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:v1 -c /c
 | 4         | 操作逾時。 |
 | 69        | 嘗試登入次數太多被 ban。 |
 | 87        | 帳號或密碼錯誤。 |
+
+## 姊妹機器人
+
+- [Pinkoi 簽到機器人](https://github.com/wdzeng/pinkoi-coins-bot/)
+- [批踢踢登入機器人](https://github.com/wdzeng/ptt-login-bot/)
+- [Telegram ID 覬覦者](https://github.com/wdzeng/telegram-id-pretender/)
