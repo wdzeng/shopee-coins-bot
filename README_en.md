@@ -1,5 +1,9 @@
 # Shopee Coins Bot
 
+[![release](https://badgen.net/github/release/wdzeng/shopee-coins-bot/stable?color=red)](https://github.com/wdzeng/shopee-coins-bot/releases/latest)
+[![github](https://badgen.net/badge/icon/github/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot)
+[![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
+
 [中文](README.md) 👈
 
 Checkin to Shopee and get coins by CLI 😀😀
