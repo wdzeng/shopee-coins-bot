@@ -5,7 +5,7 @@ import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-const version = '1.3'
+const version = '1.4'
 const args = yargs(hideBin(process.argv))
   .usage('docker run -it hyperbola/shopee-coins-bot:v1 [options]')
   .options({
@@ -61,8 +61,14 @@ function getUsername(): string | undefined {
 }
 
 async function getPassword(): Promise<string | undefined> {
-  const pass = process.env['PASS'] || args['pass']
+  let pass = process.env['PASSWORD']
   if (pass) {
+    return pass
+  }
+
+  pass = args['pass']
+  if (pass) {
+    logger.warn('Passing password from command line is consider insecure. Use environment variable or password file instead.')
     return pass
   }
 
