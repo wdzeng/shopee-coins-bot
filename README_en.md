@@ -45,7 +45,7 @@ docker run [-it] \
     hyperbola/shopee-coins-bot:v1 -c /cookies
 ```
 
-### Options
+## Options
 
 Each argument is optional.
 
@@ -89,3 +89,9 @@ Shopee password is determined in the following order.
 | 4         | Operation timeout exceeded. |
 | 69        | Shopee rejects the login because of too much tries. |
 | 87        | Wrong username or password. |
+
+## Sister Bots
+
+- [Pinkoi Coins Bot](https://github.com/wdzeng/pinkoi-coins-bot/)
+- [PTT Login Bot](https://github.com/wdzeng/ptt-login-bot/)
+- [Telegram ID Pretender](https://github.com/wdzeng/telegram-id-pretender/)
