@@ -7,7 +7,7 @@ import { hideBin } from 'yargs/helpers'
 
 const version = '1.0.4'
 const args = yargs(hideBin(process.argv))
-  .usage('docker run -it hyperbola/shopee-coins-bot:v1 [options]')
+  .usage('docker run -it hyperbola/shopee-coins-bot:1 [options]')
   .options({
     user: {
       alias: 'u',

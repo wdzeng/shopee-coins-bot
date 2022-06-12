@@ -17,7 +17,7 @@ Checkin to Shopee and get coins by CLI 😀😀
 ### Print Help Message
 
 ```sh
-docker run -it hyperbola/shopee-coins-bot:v1 --help
+docker run -it hyperbola/shopee-coins-bot:1 --help
 ```
 
 ### Login with Username and Password
@@ -29,7 +29,7 @@ docker run [-it] \
     -e USERNAME=<username> \
     -e PASSWORD=<password> \
     -v /path/to/save/cookies:/cookies \
-    hyperbola/shopee-coins-bot:v1 -c /cookies
+    hyperbola/shopee-coins-bot:1 -c /cookies
 ```
 
 > **Warning**
@@ -42,7 +42,7 @@ If you have cookies saved in the previous run, you can login without username or
 ```sh
 docker run [-it] \
     -v /path/to/cookies:/cookies \
-    hyperbola/shopee-coins-bot:v1 -c /cookies
+    hyperbola/shopee-coins-bot:1 -c /cookies
 ```
 
 ## Options
