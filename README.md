@@ -61,7 +61,7 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 1. cookie
 2. 帳號與密碼
 
-每次登入成功時，機器就會將 cookie 更新至最新狀態。
+每次登入成功時，機器人就會將 cookie 更新至最新狀態。
 
 > **Warning**
 >
