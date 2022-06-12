@@ -5,7 +5,7 @@ import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-const version = '1.4'
+const version = '1.0.4'
 const args = yargs(hideBin(process.argv))
   .usage('docker run -it hyperbola/shopee-coins-bot:v1 [options]')
   .options({
