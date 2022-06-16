@@ -7,6 +7,7 @@
     "clean": "rm -rf dist src/*.js"
   },
   "author": "hyperbola",
+  "packageManager": "pnpm@7.2.1",
   "dependencies": {
     "loglevel": "^1.8.0",
     "selenium-webdriver": "^4.1.1",
