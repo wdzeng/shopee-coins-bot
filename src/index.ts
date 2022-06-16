@@ -68,7 +68,7 @@ async function getPassword(): Promise<string | undefined> {
 
   pass = args['pass']
   if (pass) {
-    logger.warn('Passing password from command line is consider insecure. Use environment variable or password file instead.')
+    logger.warn('Passing password from command line is considered insecure. Should use environment variable or password file.')
     return pass
   }
 
