@@ -1,58 +1,23 @@
 import fs from 'fs/promises'
 import path from 'path'
 import logger from 'loglevel'
+import { program } from 'commander'
 import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
 
 const version = '1.0.5'
-const args = yargs(hideBin(process.argv))
-  .usage('docker run -it hyperbola/shopee-coins-bot:1 [options]')
-  .options({
-    user: {
-      alias: 'u',
-      description: 'shopee username',
-      requiresArg: true,
-      required: false,
-      type: 'string'
-    },
-    pass: {
-      alias: 'p',
-      description: 'shopee password',
-      requiresArg: true,
-      required: false,
-      type: 'string'
-    },
-    'path-to-pass': {
-      alias: 'P',
-      description: 'password file',
-      requiresArg: true,
-      required: false,
-      type: 'string'
-    },
-    cookie: {
-      alias: 'c',
-      description: 'cookie file',
-      requiresArg: true,
-      required: false,
-      type: 'string'
-    },
-    'no-sms': {
-      alias: 'x',
-      description: 'do not use SMS login',
-      boolean: true,
-      default: false,
-    },
-    force: {
-      alias: 'f',
-      description: 'no error if coins already received',
-      boolean: true,
-      default: false
-    }
-  })
-  .help('help', 'show this message').alias('help', 'h')
-  .version('version', 'show version number', version).alias('version', 'v')
-  .parseSync()
+const majorVersion = version.split('.')[0]
+const args = program
+  .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
+  .description('A check-in bot for Shopee.')
+  .option('-u, --user <USERNAME>', 'shopee username')
+  .option('-p, --pass <PASSWORD>', 'shopee password')
+  .option('-P, --path-to-pass <FILE>', 'password file')
+  .option('-c, --cookie <FILE>', 'cookie file')
+  .option('-x, --no-sms', 'do not use SMS login')
+  .option('-f, --force', 'no error if coins already received')
+  .version(version)
+  .parse(process.argv)
+  .opts()
 
 logger.setDefaultLevel(process.env['DEBUG'] ? 'debug' : 'info')
 
@@ -99,7 +64,7 @@ async function main() {
   const username: string | undefined = getUsername()
   const password: string | undefined = await getPassword()
   const cookies: string | undefined = getCookies()
-  const noSmsLogin: boolean = args['no-sms']
+  const smsLogin: boolean = args['sms']
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
@@ -112,7 +77,7 @@ async function main() {
 
   // Run bot.
   const bot = new Bot(username, password, cookies)
-  let result = await bot.run(noSmsLogin)
+  let result = await bot.run(!smsLogin)
 
   // Update exit code if force is set.
   if (result === 1 && args['force']) {
