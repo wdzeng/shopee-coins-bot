@@ -4,7 +4,7 @@ import logger from 'loglevel'
 import { program } from 'commander'
 import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
 
-const version = '1.0.5'
+const version = '1.0.6'
 const majorVersion = version.split('.')[0]
 const args = program
   .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
