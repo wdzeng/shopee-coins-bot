@@ -157,7 +157,7 @@ export default class TaiwanShopeeBot {
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
-    logger.info('An SMS message is sent to your mobile. Please click the link in 10 minutes. I will wait for you...')
+    logger.info('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
     try {
       await this.driver.wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), 10 * 60 * 1000) // timeout is 10min
     } catch (e: unknown) {
