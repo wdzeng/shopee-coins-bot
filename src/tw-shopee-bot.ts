@@ -159,7 +159,7 @@ export default class TaiwanShopeeBot {
     // redirected to coin page.
     logger.info('An SMS message is sent to your mobile. Please click the link in 10 minutes. I will wait for you...')
     try {
-      await this.driver.wait(until.urlIs(urlCoin), 10 * 60 * 1000) // timeout is 10min
+      await this.driver.wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), 10 * 60 * 1000) // timeout is 10min
     } catch (e: unknown) {
       if (e instanceof error.TimeoutError) {
         logger.error('You are too slow. Bye bye.')
