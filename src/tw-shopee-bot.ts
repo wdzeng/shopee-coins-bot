@@ -246,6 +246,7 @@ export default class TaiwanShopeeBot {
       .addArguments('--disable-dev-shm-usage')
       .addArguments('--disable-gpu')
     if (process.env['DEBUG']) {
+      logger.debug('Open debug port on 9222.')
       options.addArguments('--remote-debugging-port=9222')
     }
 
