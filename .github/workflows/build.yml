@@ -1,0 +1,16 @@
+Name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build image and push onto dockerhub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wdzeng/dockerhub@v1
+        with:
+          username: hyperbola
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
