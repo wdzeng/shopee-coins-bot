@@ -1,4 +1,4 @@
-Name: Build
+name: Build
 
 on:
   push:
