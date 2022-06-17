@@ -22,7 +22,7 @@ const args = program
 logger.setDefaultLevel(process.env['DEBUG'] ? 'debug' : 'info')
 
 function getUsername(): string | undefined {
-  return process.env['USERNAME'] || args['user']
+  return process.env['USERNAME'] || args.user
 }
 
 async function getPassword(): Promise<string | undefined> {
@@ -31,14 +31,14 @@ async function getPassword(): Promise<string | undefined> {
     return pass
   }
 
-  pass = args['pass']
+  pass = args.pass
   if (pass) {
     logger.warn('Passing password from command line is considered insecure. Should use environment variable or password file.')
     return pass
   }
 
   // Try to read password from file.
-  let passPath: string | undefined = process.env['PATH_PASS'] || args['path-to-pass']
+  let passPath: string | undefined = process.env['PATH_PASS'] || args.pathToPass
   if (passPath) {
     passPath = path.resolve(passPath)
     logger.debug('Try to read password: ' + path)
@@ -56,15 +56,18 @@ async function getPassword(): Promise<string | undefined> {
 }
 
 function getCookies(): string | undefined {
-  const cookie = process.env['COOKIE'] || args['cookie']
+  const cookie = process.env['COOKIE'] || args.cookie
   return cookie && path.resolve(cookie)
 }
 
 async function main() {
+  logger.debug('dump arguments')
+  logger.debug(JSON.stringify(args))
+
   const username: string | undefined = getUsername()
   const password: string | undefined = await getPassword()
   const cookies: string | undefined = getCookies()
-  const smsLogin: boolean = args['sms']
+  const smsLogin: boolean = args.sms
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
@@ -80,7 +83,7 @@ async function main() {
   let result = await bot.run(!smsLogin)
 
   // Update exit code if force is set.
-  if (result === 1 && args['force']) {
+  if (result === 1 && args.force) {
     result = 0
   }
 
