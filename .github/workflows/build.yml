@@ -14,3 +14,13 @@ jobs:
         with:
           username: hyperbola
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  tag:
+    name: Add tags to repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: version
+        uses: wdzeng/version@v1
+      - run: |
+          git tag -f ${{ steps.version.outputs.version }} main && \
+          git push -f origin ${{ steps.version.outputs.version }}
