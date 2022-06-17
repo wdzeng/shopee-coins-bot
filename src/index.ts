@@ -13,6 +13,7 @@ const args = program
   .option('-p, --pass <PASSWORD>', 'shopee password')
   .option('-P, --path-to-pass <FILE>', 'password file')
   .option('-c, --cookie <FILE>', 'cookie file')
+  .option('-i, --ignore-password', 'do not save password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
@@ -68,6 +69,7 @@ async function main() {
   const password: string | undefined = await getPassword()
   const cookies: string | undefined = getCookies()
   const smsLogin: boolean = args.sms
+  const ignorePassword: boolean = args.ignorePassword
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
@@ -80,7 +82,7 @@ async function main() {
 
   // Run bot.
   const bot = new Bot(username, password, cookies)
-  let result = await bot.run(!smsLogin)
+  let result = await bot.run(!smsLogin, ignorePassword)
 
   // Update exit code if force is set.
   if (result === 1 && args.force) {
