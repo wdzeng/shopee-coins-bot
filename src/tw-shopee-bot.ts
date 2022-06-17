@@ -172,14 +172,14 @@ export default class TaiwanShopeeBot {
     return
   }
 
-  private async saveCookies(): Promise<void> {
+  private async saveCookies(ignorePassword: boolean): Promise<void> {
     logger.debug('Start to save cookie.')
 
     try {
       const cookies = await this.driver.manage().getCookies()
       const json: ShopeeCredential = {
-        username: this.username,
-        password: this.password,
+        username: ignorePassword ? undefined : this.username,
+        password: ignorePassword ? undefined : this.password,
         cookies
       }
 
@@ -196,7 +196,7 @@ export default class TaiwanShopeeBot {
     }
   }
 
-  private async loadCookies(): Promise<void> {
+  private async loadCookies(ignorePassword: boolean): Promise<void> {
     logger.debug('Start to load cookies.')
 
     // Connect to dummy page.
@@ -216,8 +216,10 @@ export default class TaiwanShopeeBot {
         cookies = json
       }
       else {
-        this.username = json.username
-        this.password = json.password
+        if (!ignorePassword) {
+          this.username = json.username
+          this.password = json.password
+        }
         cookies = json.cookies
       }
 
@@ -256,12 +258,12 @@ export default class TaiwanShopeeBot {
       .build()
   }
 
-  async run(disableSmsLogin: boolean): Promise<number> {
+  async run(disableSmsLogin: boolean, ignorePassword: boolean): Promise<number> {
     await this.initDriver()
 
     try {
       if (this.pathCookie !== undefined) {
-        await this.loadCookies()
+        await this.loadCookies(ignorePassword)
       }
       else {
         logger.info('No cookies given. Will try to login using username and password.')
@@ -288,7 +290,7 @@ export default class TaiwanShopeeBot {
 
       // Save cookies.
       if (this.pathCookie !== undefined) {
-        await this.saveCookies() // never raise error
+        await this.saveCookies(ignorePassword) // never raise error
       }
 
       // Receive coins.
