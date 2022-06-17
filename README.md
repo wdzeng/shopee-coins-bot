@@ -8,11 +8,11 @@
 
 > **Warning**
 >
-> 這支程式針對台灣的蝦皮使用者設計，也就是使用 shopee.tw 網站者。
+> 這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。
 
 ## 使用方式
 
-這支程式需要用到 docker。
+這支程式需要用到 [docker](https://www.docker.com/)。
 
 ### 使用說明
 
