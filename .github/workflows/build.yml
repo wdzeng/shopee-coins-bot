@@ -21,6 +21,9 @@ jobs:
       - uses: actions/checkout@v3
       - id: version
         uses: wdzeng/version@v1
-      - run: |
+        with:
+          prefix: v
+      - name: Add tags
+        run: |
           git tag -f ${{ steps.version.outputs.version }} main && \
           git push -f origin ${{ steps.version.outputs.version }}
