@@ -10,6 +10,8 @@
 >
 > 這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。
 
+[搭配 GitHub Action 請點我！](https://github.com/wdzeng/bot-automation)
+
 ## 使用方式
 
 這支程式需要用到 [docker](https://www.docker.com/)。
