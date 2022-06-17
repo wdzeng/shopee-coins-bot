@@ -4,8 +4,6 @@
 [![github](https://badgen.net/badge/icon/github/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot)
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
 
-[English](README_en.md) 👈
-
 💰💰 簽到蝦皮領蝦幣 💰💰
 
 > **Warning**
