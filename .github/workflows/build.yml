@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: wdzeng/dockerhub@v1
         with:
-          username: hyperbola
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
   tag:
     name: Add tags to repository
