@@ -3,6 +3,7 @@ import path from 'path'
 import logger from 'loglevel'
 import { program } from 'commander'
 import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
+import { isValidPassword } from './util'
 
 const version = '1.0.7'
 const majorVersion = version.split('.')[0]
@@ -77,6 +78,11 @@ async function main() {
   if (!cookies && (!username || !password)) {
     // Neither cookie nor password is given.
     logger.error('Failed to login. Missing username or password.')
+    process.exit(EXIT_CODE_WRONG_PASSWORD)
+  }
+
+  if (!cookies && !isValidPassword(password)) {
+    logger.error('Login failed: wrong password.')
     process.exit(EXIT_CODE_WRONG_PASSWORD)
   }
 
