@@ -52,15 +52,10 @@ runs:
       # If the decryption did not succeed and the login method is not credential, keeps going on
       continue-on-error: ${{ inputs.login != 'credential' }}
     
-    - name: Escape username and password strings
-      id: escape
-      env:
-        ESCAPE_username: ${{ inputs.username }}
-        ESCAPE_password: ${{ inputs.password }}
-      shell: bash -e {0}
-      run: node -e 'function P(a){for(c of a)if(c<=31||c>=127)return 0;return 1}for([key,value]of Object.entries(process.env))key.startsWith("ESCAPE_")&&(realKey=key.substring(7),output=value.split("").map(a=>`\\${a}`).join(""),console.log(`::set-output name=${realKey}::${output}`),console.log(`::add-mask::${output}`))'
-    
     - name: Run shopee checkin bot
+      env:
+        SHOPEE_USERNAME: ${{ inputs.username }}
+        SHOPEE_PASSWORD: ${{ inputs.password }}
       shell: bash -e {0}
       run: |
         FLAGS='-f'
@@ -79,8 +74,8 @@ runs:
 
         docker run                                         \
           --user $UID                                      \
-          -e USERNAME=${{ steps.escape.outputs.username }} \
-          -e PASSWORD=${{ steps.escape.outputs.password }} \
+          -e USERNAME="$SHOPEE_USERNAME"                   \
+          -e PASSWORD="$SHOPEE_PASSWORD"                   \
           $MOUNT                                           \
           -t                                               \
           ${{ inputs.image }} -c /repo/plain_credential $FLAGS
