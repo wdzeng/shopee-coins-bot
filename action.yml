@@ -38,7 +38,17 @@ runs:
       # Runs only if the checkout succeeded, and the user does not require password login
       if: ${{ steps.checkout.outcome == 'success' && inputs.login != 'password' }}
       shell: bash -e {0}
-      run: base64 -d credential | openssl aes-256-cbc -d -pass pass:${{ inputs.key }} -pbkdf2 > plain_credential
+      run: |
+        if [[ -f credential ]]; then 
+          source=credential
+        elif [[ -f shopee ]]; then
+          source=shopee
+        else
+          exit 1
+        fi
+
+        base64 -d $source | openssl aes-256-cbc -d -pass pass:${{ inputs.key }} -pbkdf2 > plain_credential
+      
       # If the decryption did not succeed and the login method is not credential, keeps going on
       continue-on-error: ${{ inputs.login != 'credential' }}
     
@@ -83,8 +93,11 @@ runs:
         if [[ '${{ steps.checkout.outcome }}' != 'success' ]]; then
           cd .credential
         fi
-        cat plain_credential | openssl aes-256-cbc -pass pass:${{ inputs.key }} -pbkdf2 | base64 > credential && \
+        cat plain_credential | openssl aes-256-cbc -pass pass:${{ inputs.key }} -pbkdf2 | base64 > shopee && \
         rm plain_credential
+
+        # Remove old credential file
+        rm -f credential
     
     - name: Update credential
       uses: peaceiris/actions-gh-pages@v3
