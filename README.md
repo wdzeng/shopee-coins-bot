@@ -10,7 +10,7 @@
 
 > **Warning** 
 >
-> 注意！如果你 fork 這個專案是因為看了操作手冊跑機器人，那你應該弄錯了。你要 fork 的是[簽到機器人 on GitHub Action!](https://github.com/wdzeng/bot-automation) 這份專案才對！
+> 注意！如果你 fork 這個專案是因為看了[蝦皮簽到機器人使用說明](https://github.com/wdzeng/bot-automation/blob/main/docs/shopee-gha-inst.md)，那你應該弄錯了。你要 fork 的是[簽到機器人 on GitHub Action!](https://github.com/wdzeng/bot-automation) 這份專案才對！
 
 ## 使用方式
 
