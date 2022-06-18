@@ -1,0 +1,16 @@
+name: 蝦皮簽到
+
+on: 
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # Run cron at 09:00 UTC+8
+    - cron:  '0 1 * * *'
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wdzeng/shopee-coins-bot@action
+        with:
+          key: ${{ secrets.AES_KEY }}
+          login: credential
