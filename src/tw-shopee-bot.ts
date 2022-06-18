@@ -4,7 +4,7 @@ import {
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
-import { isValidPassword, xpathByText } from './util'
+import { /* isValidPassword, */ xpathByText } from './util'
 
 const txtWrongPassword1 = '你的帳號或密碼不正確，請再試一次'
 const txtWrongPassword2 = '登入失敗，請稍後再試或使用其他登入方法'
@@ -63,10 +63,10 @@ export default class TaiwanShopeeBot {
       return EXIT_CODE_WRONG_PASSWORD
     }
 
-    if (!isValidPassword(this.password)) {
-      logger.error('Login failed: wrong password.')
-      process.exit(EXIT_CODE_WRONG_PASSWORD)
-    }
+    // if (!isValidPassword(this.password)) {
+    //   logger.error('Login failed: wrong password.')
+    //   process.exit(EXIT_CODE_WRONG_PASSWORD)
+    // }
 
     logger.info('Try to login by username and password.')
 
