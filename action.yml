@@ -1,0 +1,100 @@
+name: Shopee Coins Bot
+description: 'Shopee Coins Bot with GitHub action!'
+author: Hyperbola
+
+inputs:
+  image:
+    description: docker image used to run checking bot
+    required: false
+    default: hyperbola/shopee-coins-bot:1
+  key:
+    # https://freeaeskey.xyz/
+    description: aes 256 bit key used to encrypt and decrypt user credential
+    required: true
+  username:
+    description: shopee username; could be ID, email or mobile number
+    required: false
+  password:
+    description: shopee password
+    required: false
+  login:
+    description: Use saved credential or password to login
+    required: false
+    default: default
+
+runs:
+  using: composite
+  steps:
+    
+    - name: Checkout to credential branch
+      id: checkout
+      uses: actions/checkout@v3
+      with:
+        ref: credential
+      # If the branch does not exists and the login method is not credential, keeps going on
+      continue-on-error: ${{ inputs.login != 'credential' }}
+    
+    - name: Decrypt credential
+      # Runs only if the checkout succeeded, and the user does not require password login
+      if: ${{ steps.checkout.outcome == 'success' && inputs.login != 'password' }}
+      shell: bash -e {0}
+      run: base64 -d credential | openssl aes-256-cbc -d -pass pass:${{ inputs.key }} -pbkdf2 > plain_credential
+      # If the decryption did not succeed and the login method is not credential, keeps going on
+      continue-on-error: ${{ inputs.login != 'credential' }}
+    
+    - name: Escape username and password strings
+      id: escape
+      env:
+        ESCAPE_username: ${{ inputs.username }}
+        ESCAPE_password: ${{ inputs.password }}
+      shell: bash -e {0}
+      run: node -e 'function P(a){for(c of a)if(c<=31||c>=127)return 0;return 1}for([key,value]of Object.entries(process.env))key.startsWith("ESCAPE_")&&(realKey=key.substring(7),output=value.split("").map(a=>`\\${a}`).join(""),console.log(`::set-output name=${realKey}::${output}`),console.log(`::add-mask::${output}`))'
+    
+    - name: Run shopee checkin bot
+      shell: bash -e {0}
+      run: |
+        FLAGS='-f'
+        if [[ '${{ inputs.login }}' == credential ]]; then
+          FLAGS+=' --no-sms'
+        fi
+
+        # if the checkout succeeded then mount current directory or else
+        # the subdirectory `.credential`
+        if [[ '${{ steps.checkout.outcome }}' == 'success' ]]; then
+          MOUNT="-v $(pwd):/repo"
+        else
+          mkdir .credential
+          MOUNT="-v $(pwd)/.credential:/repo"
+        fi
+
+        docker run                                         \
+          --user $UID                                      \
+          -e USERNAME=${{ steps.escape.outputs.username }} \
+          -e PASSWORD=${{ steps.escape.outputs.password }} \
+          $MOUNT                                           \
+          -t                                               \
+          ${{ inputs.image }} -c /repo/plain_credential $FLAGS
+    
+    - name: Encrypt credential
+      shell: bash -e {0}
+      run: |
+        # If the checkout did not succeeded then the credentials is placed 
+        # at .credential directory
+        if [[ '${{ steps.checkout.outcome }}' != 'success' ]]; then
+          cd .credential
+        fi
+        cat plain_credential | openssl aes-256-cbc -pass pass:${{ inputs.key }} -pbkdf2 | base64 > credential && \
+        rm plain_credential
+    
+    - name: Update credential
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ github.token }}
+        publish_branch: credential
+        publish_dir: ${{ steps.checkout.outcome == 'success' && '.' || '.credential' }}
+        allow_empty_commit: true
+        force_orphan: true
+        user_name: bot
+        user_email: bot@hyperbola.me
+        commit_message: update credential
+        enable_jekyll: true # dont generate .nojekyll file

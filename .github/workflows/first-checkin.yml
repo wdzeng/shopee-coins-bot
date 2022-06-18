@@ -1,0 +1,22 @@
+name: 蝦皮簽到初始化
+
+on: 
+  workflow_dispatch:
+    inputs:
+      username:
+        description: '蝦皮帳號（ID、信箱或手機號碼皆可）'
+        required: true
+      password:
+        description: '蝦皮密碼'
+        required: true
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wdzeng/shopee-coins-bot@action
+        with:
+          username: ${{ inputs.username }}
+          password: ${{ inputs.password }}
+          key: ${{ secrets.AES_KEY }}
+          login: password
