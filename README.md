@@ -10,9 +10,7 @@
 
 > **Warning** 
 >
-> 注意！這是機器人的原始碼專案，是給技術人員看的。
-> 
-> 如果你要找的是簡易上手的機器人操作設定，請左轉到[簽到機器人 on GitHub Action!](https://github.com/wdzeng/bot-automation) 專案。如果你是鄉民而不是工程師，你要 fork 的不是這個專案喔！
+> 注意！如果你 fork 這個專案是因為看了操作手冊跑機器人，那你應該弄錯了。你要 fork 的是[簽到機器人 on GitHub Action!](https://github.com/wdzeng/bot-automation) 這份專案才對！
 
 ## 使用方式
 
