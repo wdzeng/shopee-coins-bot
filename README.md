@@ -10,7 +10,7 @@
 >
 > 這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。
 
-[搭配 GitHub Action 請點我！](https://github.com/wdzeng/bot-automation)
+注意！這是機器人的原始碼專案，是給技術人員看的。如果你要找的是簡易上手的機器人操作設定，請左轉到[簽到機器人 on GitHub Action!](https://github.com/wdzeng/bot-automation) 專案。
 
 ## 使用方式
 
