@@ -14,7 +14,7 @@ const args = program
   .option('-p, --pass <PASSWORD>', 'shopee password')
   .option('-P, --path-to-pass <FILE>', 'password file')
   .option('-c, --cookie <FILE>', 'cookie file')
-  .option('-i, --ignore-password', 'do not save password with cookies')
+  .option('-i, --ignore-password', 'do not save username and password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
@@ -74,6 +74,10 @@ async function main() {
   logger.debug('username: ' + username)
   logger.debug('password: ' + password)
   logger.debug('cookies: ' + cookies)
+
+  if (ignorePassword) {
+    logger.warn('flag `--ignore-password` has been deprecated and will been removed in the future.')
+  }
 
   if (!cookies && (!username || !password)) {
     // Neither cookie nor password is given.
