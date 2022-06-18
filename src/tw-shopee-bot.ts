@@ -225,8 +225,9 @@ export default class TaiwanShopeeBot {
       }
       else {
         if (!ignorePassword) {
-          this.username = json.username
-          this.password = json.password
+          // If username or password is not explicitly set, loads if from credential
+          this.username ||= json.username
+          this.password ||= json.password
         }
         cookies = json.cookies
       }
