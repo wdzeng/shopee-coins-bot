@@ -85,9 +85,12 @@ async function main() {
     process.exit(EXIT_CODE_WRONG_PASSWORD)
   }
 
-  if (!cookies && !isValidPassword(password)) {
-    logger.error('Login failed: wrong password.')
-    process.exit(EXIT_CODE_WRONG_PASSWORD)
+  // if (!cookies && !isValidPassword(password)) {
+  if (password && !isValidPassword(password)) {
+    // logger.error('Login failed: wrong password.')
+    // process.exit(EXIT_CODE_WRONG_PASSWORD)
+    logger.warn('Password length does not meet the requirement (length 8-16). Was this password set long time ago?')
+    logger.warn('I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4')
   }
 
   // Run bot.
