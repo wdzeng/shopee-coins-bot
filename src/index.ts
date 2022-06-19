@@ -78,6 +78,8 @@ function getCookies(): string | undefined {
 }
 
 async function main() {
+  logger.info('Start shopee coins bot v' + version)
+
   logger.debug('dump arguments')
   logger.debug(JSON.stringify(args))
 
