@@ -1,13 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@types/node': ^17.0.36
+  '@types/node': ^16.11.41
   '@types/selenium-webdriver': ^4.1.1
   '@vercel/ncc': ^0.34.0
   commander: ^9.3.0
   loglevel: ^1.8.0
-  selenium-webdriver: ^4.1.1
-  typescript: ^4.7.2
+  selenium-webdriver: ^4.2.0
+  typescript: ^4.7.4
 
 dependencies:
   commander: 9.3.0
@@ -15,15 +15,15 @@ dependencies:
   selenium-webdriver: 4.2.0
 
 devDependencies:
-  '@types/node': 17.0.45
+  '@types/node': 16.11.41
   '@types/selenium-webdriver': 4.1.1
   '@vercel/ncc': 0.34.0
-  typescript: 4.7.3
+  typescript: 4.7.4
 
 packages:
 
-  /@types/node/17.0.45:
-    resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
+  /@types/node/16.11.41:
+    resolution: {integrity: sha512-mqoYK2TnVjdkGk8qXAVGc/x9nSaTpSrFaGFm43BUH3IdoBV0nta6hYaGmdOvIMlbHJbUEVen3gvwpwovAZKNdQ==}
     dev: true
 
   /@types/selenium-webdriver/4.1.1:
@@ -35,7 +35,7 @@ packages:
   /@types/ws/8.5.3:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 16.11.41
     dev: true
 
   /@vercel/ncc/0.34.0:
@@ -198,8 +198,8 @@ packages:
       rimraf: 3.0.2
     dev: false
 
-  /typescript/4.7.3:
-    resolution: {integrity: sha512-WOkT3XYvrpXx4vMMqlD+8R8R37fZkjyLGlxavMc4iB8lrl8L0DeTcHbYgw/v0N/z9wAFsgBhcsF0ruoySS22mA==}
+  /typescript/4.7.4:
+    resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
