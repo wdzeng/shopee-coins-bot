@@ -43,31 +43,39 @@ export default class TaiwanShopeeBot {
   private async tryLogin(): Promise<number | undefined> {
     logger.info('Start to login shopee.')
 
+    // Go to the login page. If the user is already logged in, the webpage
+    // will be soon redirected to the coin check-in page. Since the login form
+    // still shows temporarily in this case, we could not determine if the user
+    // is not logged in even if the login form appears. An alternative way is
+    // to wait for a delay (4s), and if the webpage stays at the login page, we
+    // assert that the user is not logged in.
     const urlLogin = 'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
     await this.driver.get(urlLogin)
-
-    // TODO wait redirect?
     await new Promise(res => setTimeout(res, 4000))
     const curUrl = await this.driver.getCurrentUrl()
     logger.debug('Current at url: ' + curUrl)
 
     const urlCoin = 'https://shopee.tw/shopee-coins'
     if (curUrl === urlCoin) {
-      // Already logged in.
+      // The webpage is redirected to the coin check-in page and therefore
+      // the user must have been logged in.
       logger.info('Already logged in.')
       return
     }
+    // The webpage stays at the login page after the delay (4s). We assert that
+    // the user is not logged in.
 
-    // Not logged in; try to login by password.
+    // If username or password is not specified, the login fails.
     if (!this.username || !this.password) {
       logger.error('Failed to login. Missing username or password.')
       return EXIT_CODE_WRONG_PASSWORD
     }
-
     // if (!isValidPassword(this.password)) {
     //   logger.error('Login failed: wrong password.')
     //   process.exit(EXIT_CODE_WRONG_PASSWORD)
     // }
+
+    // Now try to fill the login form and submit it.
 
     logger.info('Try to login by username and password.')
 
@@ -78,10 +86,10 @@ export default class TaiwanShopeeBot {
     await inputPassword.sendKeys(this.password)
 
     // Submit form.
-    const btnLogin = await this.driver.findElement(By.xpath(xpathByText('button', '登入')))
     // Wait until the login button is enabled.
+    const btnLogin = await this.driver.findElement(By.xpath(xpathByText('button', '登入')))
     await this.driver.wait(until.elementIsEnabled(btnLogin), waitTimeout)
-    btnLogin.click() // do not wait for click since it may hang = =
+    btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
     const txtWrongPasswords = [
