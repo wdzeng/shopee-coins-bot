@@ -41,7 +41,8 @@ export default class TaiwanShopeeBot {
   ) { }
 
   private async tryLogin(): Promise<number | undefined> {
-    logger.debug('Start to check if user is already logged in.')
+    logger.info('Start to login shopee.')
+
     const urlLogin = 'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
     await this.driver.get(urlLogin)
 
@@ -81,7 +82,7 @@ export default class TaiwanShopeeBot {
     // Wait until the login button is enabled.
     await this.driver.wait(until.elementIsEnabled(btnLogin), waitTimeout)
     btnLogin.click() // do not wait for click since it may hang = =
-    logger.debug('Login form submitted.')
+    logger.info('Login form submitted. Waiting for redirect.')
 
     // Wait for something happens.
     const xpath = [
@@ -164,7 +165,7 @@ export default class TaiwanShopeeBot {
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
-    logger.info('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
     try {
       await this.driver.wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), 10 * 60 * 1000) // timeout is 10min
     } catch (e: unknown) {
@@ -180,7 +181,7 @@ export default class TaiwanShopeeBot {
   }
 
   private async saveCookies(ignorePassword: boolean): Promise<void> {
-    logger.debug('Start to save cookie.')
+    logger.info('Start to save cookie.')
 
     try {
       const cookies = await this.driver.manage().getCookies()
@@ -204,7 +205,7 @@ export default class TaiwanShopeeBot {
   }
 
   private async loadCookies(ignorePassword: boolean): Promise<void> {
-    logger.debug('Start to load cookies.')
+    logger.info('Start to load cookies.')
 
     // Connect to dummy page.
     const urlHome = 'https://shopee.tw/'
@@ -239,10 +240,10 @@ export default class TaiwanShopeeBot {
       // Cannot load cookies; ignore. This may be due to invalid cookie string
       // pattern.
       if (e instanceof Error) {
-        logger.debug('Failed to load cookies: ' + e.message)
+        logger.error('Failed to load cookies: ' + e.message)
       }
       else {
-        logger.debug('Failed to load cookies.')
+        logger.error('Failed to load cookies.')
       }
     }
   }
