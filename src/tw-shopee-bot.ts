@@ -7,11 +7,10 @@ import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { /* isValidPassword, */ xpathByText } from './util'
 
-const txtPlayPuzzle = '點擊以重新載入頁面'
 const txtUseLink = '使用連結驗證'
 const txtReceiveCoin = '今日簽到獲得'
-const txtTooMuchTry = '您已達到今日驗證次數上限。'
 const txtShopeeReward = '蝦幣獎勵'
+const txtTooMuchTry = '您已達到今日驗證次數上限。'
 const txtCoinReceived = '明天再回來領取'
 const waitTimeout = 2 * 60 * 1000 // 2 minutes
 
@@ -20,6 +19,7 @@ export const EXIT_CODE_ALREADY_RECEIVED = 1
 export const EXIT_CODE_NEED_SMS_AUTH = 2
 export const EXIT_CODE_CANNOT_SOLVE_PUZZLE = 3
 export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
+export const EXIT_CODE_NEED_EMAIL_AUTH = 5
 export const EXIT_CODE_TOO_MUCH_TRY = 69
 export const EXIT_CODE_WRONG_PASSWORD = 87
 
@@ -88,6 +88,8 @@ export default class TaiwanShopeeBot {
       '登入失敗，請稍後再試或使用其他登入方法',
       '您輸入的帳號或密碼不正確，若遇到困難，請重設您的密碼。'
     ]
+    const txtPlayPuzzle = '點擊以重新載入頁面'
+    const txtEmailAuth = '透過電子郵件連結驗證'
 
     // Wait for something happens.
     const xpath = [
@@ -96,6 +98,7 @@ export default class TaiwanShopeeBot {
       xpathByText('div', txtUseLink),
       xpathByText('div', txtTooMuchTry),
       xpathByText('div', txtShopeeReward),
+      xpathByText('div', txtEmailAuth)
     ].join('|')
     const result = await this.driver.wait(until.elementLocated(By.xpath(xpath)), waitTimeout)
     const text = await result.getText()
@@ -120,6 +123,11 @@ export default class TaiwanShopeeBot {
       // need to authenticate via SMS link
       logger.warn('Login failed: please login via SMS.')
       return EXIT_CODE_NEED_SMS_AUTH
+    }
+    if (text === txtEmailAuth) {
+      // need to authenticate via email; this is currently not supported
+      logger.error('Login failed: need email Auth')
+      return EXIT_CODE_NEED_EMAIL_AUTH
     }
 
     // Unknown error
