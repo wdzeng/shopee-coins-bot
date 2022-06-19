@@ -88,9 +88,6 @@ async function main() {
   const cookies: string | undefined = getCookies()
   const smsLogin: boolean = args.sms
   const ignorePassword: boolean = args.ignorePassword
-  logger.debug('username: ' + username)
-  logger.debug('password: ' + password)
-  logger.debug('cookies: ' + cookies)
 
   if (ignorePassword) {
     logger.warn('flag `--ignore-password` has been deprecated and will been removed in the future.')
