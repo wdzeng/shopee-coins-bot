@@ -327,33 +327,34 @@ export default class TaiwanShopeeBot {
 
   async run(disableSmsLogin: boolean, ignorePassword: boolean, screenshotPath: string | undefined): Promise<number> {
     await this.initDriver()
-    let exitCode: number | undefined = undefined
 
     try {
-      exitCode = await this.runBot(disableSmsLogin, ignorePassword)
+      const exitCode = await this.runBot(disableSmsLogin, ignorePassword)
+      if (exitCode !== 0 && screenshotPath) {
+        // If not succeeded then take a screenshot
+        await this.takeScreenshot(screenshotPath)
+      }
+      return exitCode
     }
     catch (e: unknown) {
+      if (screenshotPath) {
+        // If not succeeded then take a screenshot
+        await this.takeScreenshot(screenshotPath)
+      }
+
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        exitCode = EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
+        return EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
       }
 
       // Unknown error. Take a screenshot to debug.
       if (screenshotPath) {
         await this.takeScreenshot(screenshotPath)
       }
-
       throw e
     }
     finally {
       await this.driver.close()
     }
-
-    if (exitCode !== 0 && screenshotPath) {
-      // If not succeeded then take a screenshot
-      await this.takeScreenshot(screenshotPath)
-    }
-
-    return exitCode
   }
 }
