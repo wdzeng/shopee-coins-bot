@@ -7,8 +7,6 @@ LABEL org.label-schema.url="https://github.com/wdzeng/shopee-coins-bot"
 
 USER root
 RUN apk add --no-cache chromium-chromedriver nodejs tini
-
-# Source
 COPY dist /app
 
 USER chrome
