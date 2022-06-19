@@ -7,8 +7,6 @@ import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { /* isValidPassword, */ xpathByText } from './util'
 
-const txtWrongPassword1 = '你的帳號或密碼不正確，請再試一次'
-const txtWrongPassword2 = '登入失敗，請稍後再試或使用其他登入方法'
 const txtPlayPuzzle = '點擊以重新載入頁面'
 const txtUseLink = '使用連結驗證'
 const txtReceiveCoin = '今日簽到獲得'
@@ -85,10 +83,15 @@ export default class TaiwanShopeeBot {
     btnLogin.click() // do not wait for click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
+    const txtWrongPasswords = [
+      '你的帳號或密碼不正確，請再試一次',
+      '登入失敗，請稍後再試或使用其他登入方法',
+      '您輸入的帳號或密碼不正確，若遇到困難，請重設您的密碼。'
+    ]
+
     // Wait for something happens.
     const xpath = [
-      xpathByText('div', txtWrongPassword1),
-      xpathByText('div', txtWrongPassword2),
+      ...txtWrongPasswords.map(e => xpathByText('div', e)),
       xpathByText('button', txtPlayPuzzle),
       xpathByText('div', txtUseLink),
       xpathByText('div', txtTooMuchTry),
@@ -102,7 +105,7 @@ export default class TaiwanShopeeBot {
       logger.info('Login succeeded.')
       return
     }
-    if (text === txtWrongPassword1 || text === txtWrongPassword2) {
+    if (txtWrongPasswords.includes(text)) {
       // invalid password
       logger.error('Login failed: wrong password.')
       return EXIT_CODE_WRONG_PASSWORD
