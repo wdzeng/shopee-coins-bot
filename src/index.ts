@@ -16,12 +16,27 @@ const args = program
   .option('-c, --cookie <FILE>', 'cookie file')
   .option('-i, --ignore-password', 'do not save username and password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
+  .option('-q, --quiet', 'do not output message')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
   .parse(process.argv)
   .opts()
 
-logger.setDefaultLevel(process.env['DEBUG'] ? 'debug' : 'info')
+if (args.quiet) {
+  if (process.env['DEBUG']) {
+    logger.setDefaultLevel('debug')
+    logger.warn('In debug mode the verbosity will be set to debug')
+  }
+  else {
+    logger.setDefaultLevel('warn')
+  }
+}
+else if (process.env['DEBUG']) {
+  logger.setDefaultLevel('debug')
+}
+else {
+  logger.setDefaultLevel('info')
+}
 
 function getUsername(): string | undefined {
   return process.env['USERNAME'] || args.user
