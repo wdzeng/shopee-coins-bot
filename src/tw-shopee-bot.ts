@@ -325,7 +325,7 @@ export default class TaiwanShopeeBot {
     return await this.tryReceiveCoin()
   }
 
-  async takeScreenshot(screenshotPath: string): Promise<void> {
+  private async takeScreenshot(screenshotPath: string): Promise<void> {
     const png = await this.driver.takeScreenshot()
     const filename = path.resolve(screenshotPath, 'screenshot.png')
     try {
