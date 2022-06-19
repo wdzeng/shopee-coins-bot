@@ -2,7 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import logger from 'loglevel'
 import { program } from 'commander'
-import Bot, { EXIT_CODE_WRONG_PASSWORD } from './tw-shopee-bot'
+import Bot, { EXIT_CODE_WRONG_PASSWORD, EXIT_CODE_WRONG_UNKNOWN } from './tw-shopee-bot'
 import { isValidPassword } from './util'
 
 const version = '1.0.13'
@@ -111,7 +111,13 @@ async function main() {
 
   // Run bot.
   const bot = new Bot(username, password, cookies)
-  let result = await bot.run(!smsLogin, ignorePassword, screenshot)
+  let result: number
+  try {
+    result = await bot.run(!smsLogin, ignorePassword, screenshot)
+  } catch (e: unknown) {
+    // unknown error
+    return EXIT_CODE_WRONG_UNKNOWN
+  }
 
   // Update exit code if force is set.
   if (result === 1 && args.force) {
