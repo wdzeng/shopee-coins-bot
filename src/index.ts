@@ -17,6 +17,7 @@ const args = program
   .option('-i, --ignore-password', 'do not save username and password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
   .option('-q, --quiet', 'do not output message')
+  .option('-s, --screenshot <DIR>', 'directory to save screenshot if the operation timeout error occurred.')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
   .parse(process.argv)
@@ -88,6 +89,7 @@ async function main() {
   const cookies: string | undefined = getCookies()
   const smsLogin: boolean = args.sms
   const ignorePassword: boolean = args.ignorePassword
+  const screenshot: string | undefined = args.screenshot
 
   if (ignorePassword) {
     logger.warn('option `--ignore-password` has been deprecated and will be removed in the future.')
@@ -109,7 +111,7 @@ async function main() {
 
   // Run bot.
   const bot = new Bot(username, password, cookies)
-  let result = await bot.run(!smsLogin, ignorePassword)
+  let result = await bot.run(!smsLogin, ignorePassword, screenshot)
 
   // Update exit code if force is set.
   if (result === 1 && args.force) {
