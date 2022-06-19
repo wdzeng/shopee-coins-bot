@@ -90,7 +90,7 @@ async function main() {
   const ignorePassword: boolean = args.ignorePassword
 
   if (ignorePassword) {
-    logger.warn('flag `--ignore-password` has been deprecated and will been removed in the future.')
+    logger.warn('option `--ignore-password` has been deprecated and will be removed in the future.')
   }
 
   if (!cookies && (!username || !password)) {
