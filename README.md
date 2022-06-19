@@ -49,13 +49,15 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 
 所有參數都是選填。
 
-- `-u`, `--user`: 蝦皮帳號；可以是手機、電子信箱或蝦皮 ID
-- `-p`, `--pass`: 蝦皮密碼
-- `-P`, `--path-to-pass`: 密碼檔案
-- `-c`, `--cookie`: cookie 檔案
+- `-u`, `--user <STRING>`: 蝦皮帳號；可以是手機、電子信箱或蝦皮 ID
+- `-p`, `--pass <STRING>`: 蝦皮密碼
+- `-P`, `--path-to-pass <FILE>`: 密碼檔案
+- `-c`, `--cookie <FILE>`: cookie 檔案
 - ~~`-i`, `--ignore-password`: 不要儲存密碼~~ **Deprecated**
 - `-x`, `--no-sms`: 如果觸發簡訊驗證，直接令程式以失敗結束；預設為 `false`
 - `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
+- `-q`, `--quiet`: 不要印出訊息；但仍會印出警告與錯誤訊息
+- `-s`, `--screenshot <DIR>`: 儲存螢幕截圖的位置
 - `-v`, `--version`: 印出版本
 - `-h`, `--help`: 印出參數說明
 
