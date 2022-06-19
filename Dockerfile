@@ -1,12 +1,12 @@
-FROM zenika/alpine-chrome:99
+FROM zenika/alpine-chrome:99 as slim
 
-# Install chrome driver
-USER root
-RUN apk add --no-cache chromium-chromedriver
+LABEL maintainer="Hyperbola <me@hyperbola.me>"
+LABEL org.label-schema.name="Shopee Coins Bot"
+LABEL org.label-schema.description="Get shopee coins everyday."
+LABEL org.label-schema.url="https://github.com/wdzeng/shopee-coins-bot"
 
-# Install node
 USER root
-RUN apk add --no-cache nodejs tini
+RUN apk add --no-cache chromium-chromedriver nodejs tini
 
 # Source
 COPY dist /app
@@ -14,5 +14,3 @@ COPY dist /app
 USER chrome
 WORKDIR /app
 ENTRYPOINT [ "tini", "--", "node", "index.js" ]
-
-LABEL description="Get shopee coins everyday."
