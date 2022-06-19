@@ -94,6 +94,8 @@ runs:
           echo '::error::因為嘗試次數過督被蝦皮 ban 了，請明天再試。'
         elif [[ $exit_code -eq 4 ]]; then
           echo '::error::操作逾時。如果你沒有收到簡訊，可能是蝦皮的問題。如果你有收到簡訊，請回報開發者。'
+        elif [[ $exit_code -eq 5 ]]; then
+          echo '::error::觸發電子郵件驗證。非常遺憾，機器人尚不支援電子郵件驗證。'
         elif [[ $exit_code -eq 87 ]]; then
           echo '::error::帳號或密碼錯誤。'
         elif [[ $exit_code -ne 0 ]]; then
