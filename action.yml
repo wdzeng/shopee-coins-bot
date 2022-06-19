@@ -135,3 +135,12 @@ runs:
         user_email: bot@hyperbola.me
         commit_message: update credential
         enable_jekyll: true # dont generate .nojekyll file
+
+    - name: Echo hint message
+      shell: bash -e {0}
+      run: |
+        if [[ '${{ github.event_name }}' == 'workflow_dispatch' ]]; then
+          echo "::notice::簽到成功囉，從接下來開始每天凌晨 00:10 會進行排程自動簽到；不過 GitHub Action 的排程常常有數小時的延誤，所以如果發現機器人沒有準時運作的話，就再等一下吧。另外，如果你看到上面有個 \"The process '/usr/bin/git' failed with exit code 1\" 的錯誤訊息，那是正常的，不用理會。"
+        elif [[ '${{ github.event_name }}' == 'schedule' ]]; then
+          echo '::notice::自動簽到成功！'
+        fi
