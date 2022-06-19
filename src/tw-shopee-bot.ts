@@ -20,6 +20,7 @@ export const EXIT_CODE_NEED_SMS_AUTH = 2
 export const EXIT_CODE_CANNOT_SOLVE_PUZZLE = 3
 export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
 export const EXIT_CODE_NEED_EMAIL_AUTH = 5
+export const EXIT_CODE_LOGIN_DENIED = 6
 export const EXIT_CODE_TOO_MUCH_TRY = 69
 export const EXIT_CODE_WRONG_PASSWORD = 87
 export const EXIT_CODE_WRONG_UNKNOWN = 88
@@ -186,8 +187,27 @@ export default class TaiwanShopeeBot {
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
     logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    let result: 'success' | 'foul'
     try {
-      await this.driver.wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), 10 * 60 * 1000) // timeout is 10min
+      const timeout = 10 * 60 * 10000
+      const success = new Promise<'success'>(async (res, rej) => {
+        try {
+          await this.driver.wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), timeout)
+          res('success')
+        } catch (e) {
+          rej(e)
+        }
+      })
+      const foul = new Promise<'foul'>(async (res, rej) => {
+        try {
+          const txtFoul = '很抱歉，您的身份驗證已遭到拒絕。'
+          await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txtFoul))), waitTimeout)
+          res('foul')
+        } catch (e) {
+          rej(e)
+        }
+      })
+      result = await Promise.any([success, foul])
     } catch (e: unknown) {
       if (e instanceof error.TimeoutError) {
         logger.error('You are too slow. Bye bye.')
@@ -195,9 +215,14 @@ export default class TaiwanShopeeBot {
       throw e
     }
 
-    // TODO: check if login is denied.
-    logger.info('Login permitted.')
-    return
+    if (result === 'success') {
+      logger.info('Login permitted.')
+      return
+    }
+
+    // Login denied
+    logger.error('Login denied.')
+    return EXIT_CODE_LOGIN_DENIED
   }
 
   private async saveCookies(ignorePassword: boolean): Promise<void> {
