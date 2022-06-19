@@ -83,7 +83,24 @@ runs:
           $MOUNT \
           -t \
           -v /tmp/shopee_bot:/screenshot \
-          ${{ inputs.image }} -c /repo/plain_credential $FLAGS -s /screenshot
+          ${{ inputs.image }} \
+          -c /repo/plain_credential \
+          $FLAGS \
+          -s /screenshot || {
+            exit_code=$?
+          }
+        
+        if [[ $exit_code -eq 3 || $exit_code -eq 69 ]]; then
+          echo '::error::因為嘗試次數過督被蝦皮 ban 了，請明天再試。'
+        elif [[ $exit_code -eq 4 ]]; then
+          echo '::error::操作逾時。如果你沒有收到簡訊，可能是蝦皮的問題。如果你有收到簡訊，請回報開發者。'
+        elif [[ $exit_code -eq 87 ]]; then
+          echo '::error::帳號或密碼錯誤。'
+        elif [[ $exit_code -ne 0 ]]; then
+          echo "::error::發生不明錯誤，錯誤代碼為 $exit_code 。請回報開發者。"
+        fi
+
+        exit $exit_code
 
     - name: Upload error screenshot
       if: ${{ failure() }}
@@ -93,7 +110,6 @@ runs:
         path: /tmp/shopee_bot/screenshot.png
 
     - name: Encrypt credential
-      if: ${{ success() }}
       shell: bash -e {0}
       run: |
         # If the checkout did not succeeded then the credentials is placed 
