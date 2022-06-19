@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import path from 'path'
 import {
   Builder, By, IWebDriverOptionsCookie, until, WebDriver, error, Browser
 } from 'selenium-webdriver'
@@ -268,54 +269,87 @@ export default class TaiwanShopeeBot {
       .build()
   }
 
-  async run(disableSmsLogin: boolean, ignorePassword: boolean): Promise<number> {
-    await this.initDriver()
+  private async runBot(disableSmsLogin: boolean, ignorePassword: boolean): Promise<number> {
+    if (this.pathCookie !== undefined) {
+      await this.loadCookies(ignorePassword)
+    }
+    else {
+      logger.info('No cookies given. Will try to login using username and password.')
+    }
 
-    try {
-      if (this.pathCookie !== undefined) {
-        await this.loadCookies(ignorePassword)
-      }
-      else {
-        logger.info('No cookies given. Will try to login using username and password.')
-      }
-
-      let result: number | undefined = await this.tryLogin()
-      if (result === EXIT_CODE_NEED_SMS_AUTH) {
-        // Login failed. Try use the SMS link to login.
-        if (disableSmsLogin) {
-          logger.error('SMS authentication is required.')
-          return result
-        }
-        else {
-          result = await this.tryLoginWithSmsLink()
-        }
-      }
-
-      if (result !== undefined) {
-        // Failed to login.
+    let result: number | undefined = await this.tryLogin()
+    if (result === EXIT_CODE_NEED_SMS_AUTH) {
+      // Login failed. Try use the SMS link to login.
+      if (disableSmsLogin) {
+        logger.error('SMS authentication is required.')
         return result
       }
-
-      // Now we are logged in.
-
-      // Save cookies.
-      if (this.pathCookie !== undefined) {
-        await this.saveCookies(ignorePassword) // never raise error
+      else {
+        result = await this.tryLoginWithSmsLink()
       }
+    }
 
-      // Receive coins.
-      return await this.tryReceiveCoin()
+    if (result !== undefined) {
+      // Failed to login.
+      return result
+    }
+
+    // Now we are logged in.
+
+    // Save cookies.
+    if (this.pathCookie !== undefined) {
+      await this.saveCookies(ignorePassword) // never raise error
+    }
+
+    // Receive coins.
+    return await this.tryReceiveCoin()
+  }
+
+  async takeScreenshot(screenshotPath: string): Promise<void> {
+    const png = await this.driver.takeScreenshot()
+    const filename = path.resolve(screenshotPath, 'screenshot.png')
+    try {
+      await fs.writeFile(filename, png, 'base64')
+      logger.error(`A screenshot has been put at ${filename}.`)
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        logger.error('Failed to save screenshot: ' + e.message)
+      }
+      else {
+        logger.error('Failed to save screenshot.')
+      }
+    }
+  }
+
+  async run(disableSmsLogin: boolean, ignorePassword: boolean, screenshotPath: string | undefined): Promise<number> {
+    await this.initDriver()
+    let exitCode: number | undefined = undefined
+
+    try {
+      exitCode = await this.runBot(disableSmsLogin, ignorePassword)
     }
     catch (e: unknown) {
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        return EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
+        exitCode = EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
       }
-      // Unknown error.
+
+      // Unknown error. Take a screenshot to debug.
+      if (screenshotPath) {
+        await this.takeScreenshot(screenshotPath)
+      }
+
       throw e
     }
     finally {
       await this.driver.close()
     }
+
+    if (exitCode !== 0 && screenshotPath) {
+      // If not succeeded then take a screenshot
+      await this.takeScreenshot(screenshotPath)
+    }
+
+    return exitCode
   }
 }
