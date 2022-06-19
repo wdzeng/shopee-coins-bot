@@ -22,6 +22,7 @@ export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
 export const EXIT_CODE_NEED_EMAIL_AUTH = 5
 export const EXIT_CODE_TOO_MUCH_TRY = 69
 export const EXIT_CODE_WRONG_PASSWORD = 87
+export const EXIT_CODE_WRONG_UNKNOWN = 88
 
 interface ShopeeCredential {
   username: string | undefined
