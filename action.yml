@@ -97,13 +97,15 @@ runs:
         elif [[ $exit_code -eq 87 ]]; then
           echo '::error::帳號或密碼錯誤。'
         elif [[ $exit_code -ne 0 ]]; then
+          # error code should be 88
           echo "::error::發生不明錯誤，錯誤代碼為 $exit_code 。請回報開發者。"
         fi
 
+        echo "::set-output name=exit_code::$exit_code"
         exit $exit_code
 
     - name: Upload error screenshot
-      if: ${{ failure() }}
+      if: ${{ failure() && (steps.bot.outputs.exit_code == 4 || steps.bot.outputs.exit_code == 88) }}
       uses: actions/upload-artifact@v3
       with:
         name: screenshot
