@@ -115,7 +115,6 @@ export default class TaiwanShopeeBot {
       return EXIT_CODE_WRONG_PASSWORD
     }
     if (text === txtPlayPuzzle) {
-      // TODO: not know if this occurred in 2022/05
       // need to play puzzle
       logger.error('Login failed: I cannot solve the puzzle.')
       return EXIT_CODE_CANNOT_SOLVE_PUZZLE
