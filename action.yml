@@ -53,6 +53,7 @@ runs:
       continue-on-error: ${{ inputs.login != 'credential' }}
     
     - name: Run shopee checkin bot
+      id: bot
       env:
         SHOPEE_USERNAME: ${{ inputs.username }}
         SHOPEE_PASSWORD: ${{ inputs.password }}
@@ -72,15 +73,27 @@ runs:
           MOUNT="-v $(pwd)/.credential:/repo"
         fi
 
-        docker run                                         \
-          --user $UID                                      \
-          -e USERNAME="$SHOPEE_USERNAME"                   \
-          -e PASSWORD="$SHOPEE_PASSWORD"                   \
-          $MOUNT                                           \
-          -t                                               \
-          ${{ inputs.image }} -c /repo/plain_credential $FLAGS
-    
+        # Create a folder to save screenshot
+        mkdir -p /tmp/shopee_bot
+
+        docker run \
+          --user $UID \
+          -e USERNAME="$SHOPEE_USERNAME" \
+          -e PASSWORD="$SHOPEE_PASSWORD" \
+          $MOUNT \
+          -t \
+          -v /tmp/shopee_bot:/screenshot \
+          ${{ inputs.image }} -c /repo/plain_credential $FLAGS -s /screenshot
+
+    - name: Upload error screenshot
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshot
+        path: /tmp/shopee_bot/screenshot.png
+
     - name: Encrypt credential
+      if: ${{ success() }}
       shell: bash -e {0}
       run: |
         # If the checkout did not succeeded then the credentials is placed 
