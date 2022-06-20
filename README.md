@@ -93,6 +93,7 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 | 3         | 機器人遇到拼圖遊戲，但是它不會玩🥺🥺<br> 這通常是因為嘗試登入次數太多，被網站 ban 掉。 |
 | 4         | 操作逾時。 |
 | 5         | 觸發電子郵件驗證。機器人尚不支援。 |
+| 6         | 使用者進行簡訊驗證時選擇拒絕機器人登入。 |
 | 69        | 嘗試登入次數太多被 ban。 |
 | 87        | 帳號或密碼錯誤。 |
 
