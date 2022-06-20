@@ -17,7 +17,7 @@ const args = program
   .option('-i, --ignore-password', 'do not save username and password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
   .option('-q, --quiet', 'do not output message')
-  .option('-s, --screenshot <DIR>', 'directory to save screenshot if the operation timeout error occurred.')
+  .option('-s, --screenshot <DIR>', 'directory to save screenshot if checkin failed')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
   .parse(process.argv)
