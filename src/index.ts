@@ -59,13 +59,13 @@ async function getPassword(): Promise<string | undefined> {
   let passPath: string | undefined = process.env['PATH_PASS'] || args.pathToPass
   if (passPath) {
     passPath = path.resolve(passPath)
-    logger.debug('Try to read password: ' + path)
+    logger.debug('Try to read password: ' + passPath)
     try {
       const pass = await fs.readFile(passPath, 'utf-8')
       logger.debug('Password read from file.')
       return pass
     } catch (e: any) {
-      logger.error('Failed to read password from file: ' + path)
+      logger.error('Failed to read password from file: ' + passPath)
       throw e
     }
   }
