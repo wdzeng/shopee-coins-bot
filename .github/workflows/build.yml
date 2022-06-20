@@ -1,9 +1,16 @@
 name: Build
 
 on:
+  workflow_dispatch: ~
   push:
     branches:
       - main
+    paths:
+      - src/**
+      - package.json
+      - pnpm-lock.yaml
+      - Dockerfile
+      - tsconfig.json
 
 jobs:
   build:
