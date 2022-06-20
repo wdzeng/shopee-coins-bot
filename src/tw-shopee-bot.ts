@@ -54,7 +54,7 @@ export default class TaiwanShopeeBot {
     await this.driver.get(urlLogin)
     await new Promise(res => setTimeout(res, 4000))
     const curUrl = await this.driver.getCurrentUrl()
-    logger.debug('Current at url: ' + curUrl)
+    logger.debug('Currently at url: ' + curUrl)
 
     const urlCoin = 'https://shopee.tw/shopee-coins'
     if (curUrl === urlCoin) {
