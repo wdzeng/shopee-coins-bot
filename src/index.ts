@@ -5,7 +5,7 @@ import { program } from 'commander'
 import Bot, { EXIT_CODE_WRONG_PASSWORD, EXIT_CODE_WRONG_UNKNOWN } from './tw-shopee-bot'
 import { isValidPassword } from './util'
 
-const version = '1.0.13'
+const version = '1.0.14'
 const majorVersion = version.split('.')[0]
 const args = program
   .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
