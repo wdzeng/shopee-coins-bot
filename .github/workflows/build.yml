@@ -7,10 +7,6 @@ on:
       - main
     paths:
       - src/**
-      - package.json
-      - pnpm-lock.yaml
-      - Dockerfile
-      - tsconfig.json
 
 jobs:
   build:
