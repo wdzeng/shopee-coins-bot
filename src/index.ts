@@ -21,6 +21,7 @@ const args = program
   .option('-s, --screenshot <DIR>', 'directory to save screenshot if checkin failed')
   .option('-f, --force', 'no error if coins already received')
   .version(version)
+  .exitOverride((e) => process.exit(e.exitCode === 1 ? exitCode.INVALID_OPTIONS : e.exitCode))
   .parse(process.argv)
   .opts()
 
