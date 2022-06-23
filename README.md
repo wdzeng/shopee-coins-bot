@@ -12,7 +12,7 @@
 
 這支程式需要用到 [docker](https://www.docker.com/) 或 [podman](https://podman.io/)。
 
-機器人已經包成容器，映像位於 dockerhub [`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot) 以及 GitHub Container Registry [`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。
+機器人已經包成容器，映像位於 Docker Hub [`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot) 以及 GitHub Container Registry [`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。最新版的 tag 為 `1`，其他可用的 tags 請參考 Docker Hub 或 ghcr 頁面。
 
 ### 使用說明
 
