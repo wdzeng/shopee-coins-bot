@@ -91,6 +91,7 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 | 5         | 觸發電子郵件驗證。機器人尚不支援。 |
 | 6         | 使用者進行簡訊驗證時選擇拒絕機器人登入。 |
 | 69        | 嘗試登入次數太多被 ban。 |
+| 77        | 參數不合法。 |
 | 87        | 帳號或密碼錯誤。 |
 | 88        | 不明錯誤。 |
 
