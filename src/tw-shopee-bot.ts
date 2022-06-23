@@ -6,6 +6,7 @@ import {
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { /* isValidPassword, */ xpathByText } from './util'
+import * as exitCode from './exit-code'
 
 const txtUseLink = '使用連結驗證'
 const txtReceiveCoin = '今日簽到獲得'
@@ -13,17 +14,6 @@ const txtShopeeReward = '蝦幣獎勵'
 const txtTooMuchTry = '您已達到今日驗證次數上限。'
 const txtCoinReceived = '明天再回來領取'
 const waitTimeout = 2 * 60 * 1000 // 2 minutes
-
-export const EXIT_CODE_SUCCESS = 0
-export const EXIT_CODE_ALREADY_RECEIVED = 1
-export const EXIT_CODE_NEED_SMS_AUTH = 2
-export const EXIT_CODE_CANNOT_SOLVE_PUZZLE = 3
-export const EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED = 4
-export const EXIT_CODE_NEED_EMAIL_AUTH = 5
-export const EXIT_CODE_LOGIN_DENIED = 6
-export const EXIT_CODE_TOO_MUCH_TRY = 69
-export const EXIT_CODE_WRONG_PASSWORD = 87
-export const EXIT_CODE_WRONG_UNKNOWN = 88
 
 interface ShopeeCredential {
   username: string | undefined
@@ -69,7 +59,7 @@ export default class TaiwanShopeeBot {
     // If username or password is not specified, the login fails.
     if (!this.username || !this.password) {
       logger.error('Failed to login. Missing username or password.')
-      return EXIT_CODE_WRONG_PASSWORD
+      return exitCode.WRONG_PASSWORD
     }
     // if (!isValidPassword(this.password)) {
     //   logger.error('Login failed: wrong password.')
@@ -121,22 +111,22 @@ export default class TaiwanShopeeBot {
     if (txtWrongPasswords.includes(text)) {
       // invalid password
       logger.error('Login failed: wrong password.')
-      return EXIT_CODE_WRONG_PASSWORD
+      return exitCode.WRONG_PASSWORD
     }
     if (text === txtPlayPuzzle) {
       // need to play puzzle
       logger.error('Login failed: I cannot solve the puzzle.')
-      return EXIT_CODE_CANNOT_SOLVE_PUZZLE
+      return exitCode.CANNOT_SOLVE_PUZZLE
     }
     if (text === txtUseLink) {
       // need to authenticate via SMS link
       logger.warn('Login failed: please login via SMS.')
-      return EXIT_CODE_NEED_SMS_AUTH
+      return exitCode.NEED_SMS_AUTH
     }
     if (text === txtEmailAuth) {
       // need to authenticate via email; this is currently not supported
       logger.error('Login failed: need email Auth')
-      return EXIT_CODE_NEED_EMAIL_AUTH
+      return exitCode.NEED_EMAIL_AUTH
     }
 
     // Unknown error
@@ -154,14 +144,14 @@ export default class TaiwanShopeeBot {
     if (text.startsWith(txtCoinReceived)) {
       // Already received
       logger.info('Coin already received.')
-      return EXIT_CODE_ALREADY_RECEIVED
+      return exitCode.ALREADY_RECEIVED
     }
 
     await btnReceiveCoin.click()
     await this.driver.wait(until.elementLocated(By.xpath(xpathByText('button', txtCoinReceived))))
 
     logger.info('Coin received.')
-    return EXIT_CODE_SUCCESS
+    return exitCode.SUCCESS
   }
 
   private async tryLoginWithSmsLink(): Promise<number | undefined> {
@@ -180,7 +170,7 @@ export default class TaiwanShopeeBot {
     if (reachLimit.length > 0) {
       // Failed because reach limit.
       logger.error('Cannot use SMS link to login: reach daily limits.')
-      return EXIT_CODE_TOO_MUCH_TRY
+      return exitCode.TOO_MUCH_TRY
     }
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
@@ -222,7 +212,7 @@ export default class TaiwanShopeeBot {
 
     // Login denied
     logger.error('Login denied.')
-    return EXIT_CODE_LOGIN_DENIED
+    return exitCode.LOGIN_DENIED
   }
 
   private async saveCookies(ignorePassword: boolean): Promise<void> {
@@ -323,7 +313,7 @@ export default class TaiwanShopeeBot {
     }
 
     let result: number | undefined = await this.tryLogin()
-    if (result === EXIT_CODE_NEED_SMS_AUTH) {
+    if (result === exitCode.NEED_SMS_AUTH) {
       // Login failed. Try use the SMS link to login.
       if (disableSmsLogin) {
         logger.error('SMS authentication is required.')
@@ -385,7 +375,7 @@ export default class TaiwanShopeeBot {
 
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        return EXIT_CODE_OPERATION_TIMEOUT_EXCEEDED
+        return exitCode.OPERATION_TIMEOUT_EXCEEDED
       }
 
       // Unknown error. Take a screenshot to debug.
