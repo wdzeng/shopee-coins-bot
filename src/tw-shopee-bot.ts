@@ -6,8 +6,7 @@ import logger from 'loglevel'
 import { xpathByText } from './util'
 import * as exitCode from './exit-code'
 import * as txt from './text'
-
-const WAIT_TIMEOUT = 2 * 60 * 1000 // 2 minutes
+import * as config from './config'
 
 interface ShopeeCredential {
   username: string | undefined
@@ -74,11 +73,11 @@ export default class TaiwanShopeeBot {
     // Submit form.
     // Wait until the login button is enabled.
     const btnLogin = await this.driver.findElement(By.xpath(xpathByText('button', '登入')))
-    await this.driver.wait(until.elementIsEnabled(btnLogin), WAIT_TIMEOUT)
+    await this.driver.wait(until.elementIsEnabled(btnLogin), config.TIMEOUT_OPERATION)
     btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
-    
+
 
     // Wait for something happens.
     const xpath = [
@@ -89,7 +88,7 @@ export default class TaiwanShopeeBot {
       xpathByText('div', txt.SHOPEE_REWARD),
       xpathByText('div', txt.EMAIL_AUTH)
     ].join('|')
-    const result = await this.driver.wait(until.elementLocated(By.xpath(xpath)), WAIT_TIMEOUT)
+    const result = await this.driver.wait(until.elementLocated(By.xpath(xpath)), config.TIMEOUT_OPERATION)
     const text = await result.getText()
 
     if (text === txt.SHOPEE_REWARD) {
@@ -125,7 +124,7 @@ export default class TaiwanShopeeBot {
 
   private async tryReceiveCoin(): Promise<number> {
     const xpath = `${xpathByText('button', txt.RECEIVE_COIN)} | ${xpathByText('button', txt.COIN_RECEIVED)}`
-    await this.driver.wait(until.elementLocated(By.xpath(xpath)), WAIT_TIMEOUT)
+    await this.driver.wait(until.elementLocated(By.xpath(xpath)), config.TIMEOUT_OPERATION)
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
 
     // Check if coin is already received today.
@@ -145,7 +144,7 @@ export default class TaiwanShopeeBot {
 
   private async tryLoginWithSmsLink(): Promise<number | undefined> {
     // Wait until the '使用連結驗證' button is available.
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))), WAIT_TIMEOUT)
+    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))), config.TIMEOUT_OPERATION)
 
     // Click the '使用連結驗證' button.
     const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_LINK)))
@@ -168,7 +167,7 @@ export default class TaiwanShopeeBot {
     logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
     let result: 'success' | 'foul'
     try {
-      const timeout = 10 * 60 * 10000
+      const timeout = config.TIMEOUT_SMS_AUTH
       const success = new Promise<'success'>((res, rej) => {
         this.driver
           .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), timeout)
@@ -176,9 +175,9 @@ export default class TaiwanShopeeBot {
           .catch(rej)
       })
       const foul = new Promise<'foul'>((res, rej) => {
-        
+
         this.driver
-          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), WAIT_TIMEOUT)
+          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_OPERATION)
           .then(() => res('foul'))
           .catch(rej)
       })
