@@ -56,7 +56,7 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 - `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
 - `-q`, `--quiet`: 不要印出訊息；但仍會印出警告與錯誤訊息
 - `-s`, `--screenshot <DIR>`: 簽到失敗時，儲存螢幕截圖的位置
-- `-v`, `--version`: 印出版本
+- `-V`, `--version`: 印出版本
 - `-h`, `--help`: 印出參數說明
 
 如果你同時設定了帳號、密碼與 cookie，機器人會以下列順序嘗試登入：
