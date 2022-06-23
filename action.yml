@@ -6,7 +6,7 @@ inputs:
   image:
     description: docker image used to run checking bot
     required: false
-    default: hyperbola/shopee-coins-bot:1
+    default: ghcr.io/wdzeng/shopee-coins-bot:1
   key:
     # https://freeaeskey.xyz/
     description: aes 256 bit key used to encrypt and decrypt user credential
