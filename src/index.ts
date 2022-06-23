@@ -35,7 +35,7 @@ if (program.args.length) {
 if (args.quiet) {
   if (process.env['DEBUG']) {
     logger.setDefaultLevel('debug')
-    logger.warn('In debug mode the verbosity will be set to debug')
+    logger.warn('Option `--quiet` is ignored in debug mode.')
   }
   else {
     logger.setDefaultLevel('warn')
@@ -73,7 +73,7 @@ async function getPassword(): Promise<string | undefined> {
       const pass = await fs.readFile(passPath, 'utf-8')
       logger.debug('Password read from file.')
       return pass
-    } catch (e: any) {
+    } catch (e: unknown) {
       logger.error('Failed to read password from file: ' + passPath)
       throw e
     }
