@@ -110,6 +110,8 @@ async function main() {
     process.exit(exitCode.WRONG_PASSWORD)
   }
 
+  // On v1.0.9 strict password checking was removed because of issue #4; log
+  // warning message instead.
   // if (!cookies && !isValidPassword(password)) {
   if (password && !isValidPassword(password)) {
     // logger.error('Login failed: wrong password.')
