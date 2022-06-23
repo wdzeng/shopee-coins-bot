@@ -10,15 +10,25 @@ on:
 
 jobs:
   build:
-    name: Build image and push onto dockerhub
+    name: Build and push image onto dockerhub and ghcr
     runs-on: ubuntu-latest
     steps:
-      - uses: wdzeng/dockerhub@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v2.2.2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          run_install: true
+      - name: Build project
+        run: pnpm build
+      - uses: wdzeng/image@v1
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
   tag:
     name: Add tags to repository
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
