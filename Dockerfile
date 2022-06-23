@@ -10,5 +10,6 @@ RUN apk add --no-cache chromium-chromedriver nodejs tini
 COPY dist /app
 
 USER chrome
+ENV TZ="Asia/Taipei"
 WORKDIR /app
 ENTRYPOINT [ "tini", "--", "node", "index.js" ]
