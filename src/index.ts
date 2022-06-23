@@ -2,8 +2,9 @@ import fs from 'fs/promises'
 import path from 'path'
 import logger from 'loglevel'
 import { program } from 'commander'
-import Bot, { EXIT_CODE_WRONG_PASSWORD, EXIT_CODE_WRONG_UNKNOWN } from './tw-shopee-bot'
+import Bot from './tw-shopee-bot'
 import { isValidPassword } from './util'
+import * as exitCode from './exit-code'
 
 const version = '1.0.14'
 const majorVersion = version.split('.')[0]
@@ -98,7 +99,7 @@ async function main() {
   if (!cookies && (!username || !password)) {
     // Neither cookie nor password is given.
     logger.error('Failed to login. Missing username or password.')
-    process.exit(EXIT_CODE_WRONG_PASSWORD)
+    process.exit(exitCode.WRONG_PASSWORD)
   }
 
   // if (!cookies && !isValidPassword(password)) {
@@ -116,7 +117,7 @@ async function main() {
     result = await bot.run(!smsLogin, ignorePassword, screenshot)
   } catch (e: unknown) {
     // unknown error
-    return EXIT_CODE_WRONG_UNKNOWN
+    return exitCode.WRONG_UNKNOWN
   }
 
   // Update exit code if force is set.
