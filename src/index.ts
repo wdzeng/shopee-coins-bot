@@ -8,7 +8,7 @@ import * as exitCode from './exit-code'
 
 const version = '1.0.14'
 const majorVersion = version.split('.')[0]
-const args = program
+program
   .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
   .description('A check-in bot for Shopee.')
   .option('-u, --user <USERNAME>', 'shopee username')
@@ -22,8 +22,15 @@ const args = program
   .option('-f, --force', 'no error if coins already received')
   .version(version)
   .exitOverride((e) => process.exit(e.exitCode === 1 ? exitCode.INVALID_OPTIONS : e.exitCode))
+
+const args = program
   .parse(process.argv)
   .opts()
+
+if (program.args.length) {
+  logger.error('Unknown option: ' + program.args[0])
+  process.exit(exitCode.INVALID_OPTIONS)
+}
 
 if (args.quiet) {
   if (process.env['DEBUG']) {
