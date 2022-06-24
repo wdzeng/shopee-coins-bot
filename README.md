@@ -79,7 +79,8 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 
 1. 環境變數 `PASSWORD`
 2. 程式參數 `--pass`
-3. 程式參數 `--path-to-pass`
+3. 環境變數 `PATH_PASS`
+4. 程式參數 `--path-to-pass`
 
 ## Exit Code
 
