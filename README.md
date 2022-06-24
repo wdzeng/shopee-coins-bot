@@ -55,7 +55,7 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 - `-x`, `--no-sms`: 如果觸發簡訊驗證，直接令程式以失敗結束；預設為 `false`
 - `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
 - `-q`, `--quiet`: 不要印出訊息；但仍會印出警告與錯誤訊息
-- `-s`, `--screenshot <DIR>`: 簽到失敗時，儲存螢幕截圖的位置
+- `-s`, `--screenshot <DIR>`: 簽到失敗時將螢幕截圖的儲存於指定資料夾下（圖檔檔名為 screenshot.png）
 - `-V`, `--version`: 印出版本
 - `-h`, `--help`: 印出參數說明
 
