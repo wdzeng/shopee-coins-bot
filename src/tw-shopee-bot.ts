@@ -363,9 +363,6 @@ export default class TaiwanShopeeBot {
         logger.error('Operation timeout exceeded.')
         return exitCode.OPERATION_TIMEOUT_EXCEEDED
       }
-
-      // Unknown error. Take a screenshot to debug.
-      await this.takeScreenshot(screenshotPath)
       throw e
     }
     finally {
