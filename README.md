@@ -70,6 +70,11 @@ docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /co
 >
 > Cookie 是機密資料，請妥善保存。
 
+Cookie 檔案的位置以下列優先順序決定。
+
+1. 環境變數 `COOKIE`
+2. 程式參數 `--cookie`
+
 帳號以下列優先順序決定。
 
 1. 環境變數 `USERNAME`
