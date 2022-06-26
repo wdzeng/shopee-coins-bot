@@ -127,7 +127,7 @@ async function main() {
     result = await bot.run(!smsLogin, ignorePassword, screenshot)
   } catch (e: unknown) {
     // unknown error
-    result = exitCode.WRONG_UNKNOWN
+    result = exitCode.UNKNOWN_ERROR
   }
 
   // Update exit code if force is set.

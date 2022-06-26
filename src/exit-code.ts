@@ -8,4 +8,4 @@ export const LOGIN_DENIED = 6
 export const TOO_MUCH_TRY = 69
 export const INVALID_OPTIONS = 77
 export const WRONG_PASSWORD = 87
-export const WRONG_UNKNOWN = 88
+export const UNKNOWN_ERROR = 88
