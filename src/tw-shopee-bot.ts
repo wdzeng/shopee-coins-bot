@@ -165,24 +165,29 @@ export default class TaiwanShopeeBot {
     logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
     let result: 'success' | 'foul'
     try {
-      const timeout = config.TIMEOUT_SMS_AUTH
       const success = new Promise<'success'>((res, rej) => {
         this.driver
-          .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), timeout)
+          .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), config.TIMEOUT_SMS_AUTH)
           .then(() => res('success'))
           .catch(rej)
       })
       const foul = new Promise<'foul'>((res, rej) => {
         this.driver
-          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_OPERATION)
+          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_SMS_AUTH)
           .then(() => res('foul'))
           .catch(rej)
       })
       result = await Promise.any([success, foul])
     } catch (e: unknown) {
-      if (e instanceof error.TimeoutError) {
+      // timeout error
+      if (e instanceof AggregateError && e.errors.length === 2
+        && e.errors[0] instanceof error.TimeoutError
+        && e.errors[1] instanceof error.TimeoutError) {
         logger.error('You are too slow. Bye bye.')
+        throw e.errors[0]
       }
+
+      // unexpected error
       throw e
     }
 
@@ -363,6 +368,15 @@ export default class TaiwanShopeeBot {
         logger.error('Operation timeout exceeded.')
         return exitCode.OPERATION_TIMEOUT_EXCEEDED
       }
+
+      if (e instanceof Error) {
+        logger.error('Unexpected error: ' + e.message)
+      }
+      else {
+        logger.error('Unexpected error occurred.')
+        logger.debug(e)
+      }
+
       throw e
     }
     finally {
