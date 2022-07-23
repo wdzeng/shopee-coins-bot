@@ -28,6 +28,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
   tag:
     name: Add tags to repository
+    if: ${{ github.ref == 'push' }}
     needs:
       - build
     runs-on: ubuntu-latest
