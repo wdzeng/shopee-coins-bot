@@ -70,7 +70,9 @@ async function getPassword(): Promise<string | undefined> {
     passPath = path.resolve(passPath)
     logger.debug('Try to read password: ' + passPath)
     try {
-      const pass = await fs.readFile(passPath, 'utf-8')
+      let pass = await fs.readFile(passPath, 'utf-8')
+      // Get the first line of password file
+      pass = pass.split('\n')[0]
       logger.debug('Password read from file.')
       return pass
     } catch (e: unknown) {
