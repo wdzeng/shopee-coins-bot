@@ -6,7 +6,7 @@ import Bot from './tw-shopee-bot'
 import { isValidPassword } from './util'
 import * as exitCode from './exit-code'
 
-const version = '1.0.18'
+const version = '1.1.0-alpha.1'
 const majorVersion = version.split('.')[0]
 program
   .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
@@ -72,7 +72,11 @@ async function getPassword(): Promise<string | undefined> {
     try {
       let pass = await fs.readFile(passPath, 'utf-8')
       // Get the first line of password file
-      pass = pass.split('\n')[0]
+      const passwordLines = pass.split('\n')
+      if (passwordLines.length > 1) {
+        logger.warn('Read more than one lines from password file. Only the first line is considered password.')
+      }
+      pass = passwordLines[0]
       logger.debug('Password read from file.')
       return pass
     } catch (e: unknown) {
@@ -120,6 +124,11 @@ async function main() {
     // process.exit(EXIT_CODE_WRONG_PASSWORD)
     logger.warn('Password length does not meet the requirement (length 8-16). Was this password set long time ago?')
     logger.warn('I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4')
+  }
+
+  // Warn if using screenshot in kelly image
+  if (process.env['IMAGE_VARIANT'] === 'kelly' && screenshot) {
+    logger.warn('You are using kelly image. You may not see CJK characters in screenshots.')
   }
 
   // Run bot.
