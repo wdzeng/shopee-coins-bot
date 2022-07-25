@@ -21,11 +21,20 @@ jobs:
           run_install: true
       - name: Build project
         run: pnpm build
-      - uses: wdzeng/image@v1
+      - name: Build kelly image
+        uses: wdzeng/image@v2
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          platforms: linux/amd64,linux/arm64
+          tag-format: kelly-$VERSION
+          tag-latest: kelly
+          build-target: kelly
+      - name: Build regular image
+        uses: wdzeng/image@v2
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          init: false
   tag:
     name: Add tags to repository
     if: ${{ github.event_name == 'push' }}
