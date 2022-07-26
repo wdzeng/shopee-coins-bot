@@ -12,7 +12,9 @@
 
 這支程式需要用到 [docker](https://www.docker.com/) 或 [podman](https://podman.io/)。
 
-機器人已經包成容器，映像位於 Docker Hub [`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot) 以及 GitHub Container Registry [`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。支援的平台有 amd64 以及 arm64（含樹梅派 4），但 1.0.x 的映像僅支援 amd64。
+機器人已經包成容器，映像位於 Docker Hub [`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot) 以及 GitHub Container Registry [`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。支援的平台有 amd64 以及 arm64（含樹梅派 4），但 1.0.x 版本的映像僅支援 amd64。
+
+## Tags
 
 以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container Registry 頁面。
 
