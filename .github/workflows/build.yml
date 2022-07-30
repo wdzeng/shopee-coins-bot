@@ -22,19 +22,30 @@ jobs:
       - name: Build project
         run: pnpm build
       - name: Build kelly image
-        uses: wdzeng/image@v2
+        uses: wdzeng/image@dev
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          tag-format: kelly-$VERSION
-          tag-latest: kelly
-          build-target: kelly
+          variant: kelly
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BASE_IMAGE=alpine-base
+            VARIANT=kelly
+          repo_description: Get Shopee coins everyday
+          repo_license: MIT
       - name: Build regular image
-        uses: wdzeng/image@v2
+        uses: wdzeng/image@dev
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
           init: false
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BASE_IMAGE=alpine-font
+            VARIANT=''
+          repo_description: Get Shopee coins everyday
+          repo_license: MIT
+
   tag:
     name: Add tags to repository
     if: ${{ github.event_name == 'push' }}
