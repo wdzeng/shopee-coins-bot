@@ -6,7 +6,7 @@ import Bot from './tw-shopee-bot'
 import { isValidPassword } from './util'
 import * as exitCode from './exit-code'
 
-const version = '1.1.0'
+const version = '1.1.1-alpha.1'
 const majorVersion = version.split('.')[0]
 program
   .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
@@ -126,9 +126,10 @@ async function main() {
     logger.warn('I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4')
   }
 
-  // Warn if using screenshot in kelly image
-  if (process.env['IMAGE_VARIANT'] === 'kelly' && screenshot) {
-    logger.warn('You are using kelly image. You may not see CJK characters in screenshots.')
+  // Warn if using screenshot in kelly or linlee image
+  const variant = process.env['IMAGE_VARIANT']
+  if ((variant === 'kelly' || variant === 'linlee') && screenshot) {
+    logger.warn(`You are using ${variant} variant image. You may not see CJK characters in screenshots.`)
   }
 
   // Run bot.
