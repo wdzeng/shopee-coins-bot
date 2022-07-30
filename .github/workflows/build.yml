@@ -22,7 +22,7 @@ jobs:
       - name: Build project
         run: pnpm build
       - name: Build kelly image
-        uses: wdzeng/image@dev
+        uses: wdzeng/image@v2
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -34,7 +34,7 @@ jobs:
           repo_description: Get Shopee coins everyday
           repo_license: MIT
       - name: Build regular image
-        uses: wdzeng/image@dev
+        uses: wdzeng/image@v2
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
