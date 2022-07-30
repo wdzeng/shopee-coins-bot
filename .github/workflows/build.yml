@@ -31,8 +31,8 @@ jobs:
           build-args: |
             BASE_IMAGE=alpine-base
             VARIANT=kelly
-          repo_description: Get Shopee coins everyday
-          repo_license: MIT
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
       - name: Build regular image
         uses: wdzeng/image@v2
         with:
@@ -43,8 +43,34 @@ jobs:
           build-args: |
             BASE_IMAGE=alpine-font
             VARIANT=''
-          repo_description: Get Shopee coins everyday
-          repo_license: MIT
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
+      - name: Build linlee image
+        uses: wdzeng/image@v2
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          variant: linlee
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          init: false
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            BASE_IMAGE=debian-base
+            VARIANT=linlee
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
+      - name: Build truckski image
+        uses: wdzeng/image@v2
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          init: false
+          variant: truckski
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            BASE_IMAGE=debian-font
+            VARIANT=truckski
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
 
   tag:
     name: Add tags to repository
