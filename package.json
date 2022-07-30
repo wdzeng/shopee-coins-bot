@@ -1,6 +1,6 @@
 {
   "name": "shopee-coins-bot",
-  "version": "1.1.0-alpha.1",
+  "version": "1.1.0",
   "description": "A robot that receives shopee coins.",
   "scripts": {
     "build": "tsc && ncc -m build src/index.js && rm src/*.js",
