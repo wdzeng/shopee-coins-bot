@@ -9,7 +9,7 @@ import * as exitCode from './exit-code'
 const version = '1.1.0'
 const majorVersion = version.split('.')[0]
 program
-  .name(`docker run -it hyperbola/shopee-coins-bot:${majorVersion}`)
+  .name(`docker run hyperbola/shopee-coins-bot:${majorVersion}`)
   .description('A check-in bot for Shopee.')
   .option('-u, --user <USERNAME>', 'shopee username')
   .option('-p, --pass <PASSWORD>', 'shopee password')

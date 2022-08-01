@@ -28,7 +28,7 @@
 傳入 `--help` 可以印出使用說明。
 
 ```sh
-docker run -it hyperbola/shopee-coins-bot:1 --help
+docker run hyperbola/shopee-coins-bot:1 --help
 ```
 
 ### 帳號密碼登入
@@ -36,7 +36,7 @@ docker run -it hyperbola/shopee-coins-bot:1 --help
 第一次使用時，需要提供蝦皮帳號密碼，並且強烈建議設定機器人登入後儲存 cookie 的位置，以備未來機器人能夠執行自動登入。如果你不指定一個 cookie 的位置，那未來每次登入都會需要帳號與密碼。
 
 ```sh
-docker run -it -v /path/to/somewhere:/cookie \
+docker run -v /path/to/somewhere:/cookie \
     hyperbola/shopee-coins-bot:1 -u username -p password -c /cookie
 ```
 
@@ -49,7 +49,7 @@ docker run -it -v /path/to/somewhere:/cookie \
 如果之前有儲存過 cookie，用 cookie 登入即可，這樣就不會觸發簡訊驗證。
 
 ```sh
-docker run -it -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
+docker run -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
 ```
 
 ## 參數
