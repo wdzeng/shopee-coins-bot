@@ -1,10 +1,10 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import logger from 'loglevel'
 import { program } from 'commander'
+import logger from 'loglevel'
+import * as ExitCode from './exit-code'
 import Bot from './tw-shopee-bot'
 import { isValidPassword } from './util'
-import * as exitCode from './exit-code'
 
 const version = '1.1.0'
 const majorVersion = version.split('.')[0]
@@ -29,14 +29,14 @@ program
   .option('-f, --force', 'no error if coins already received')
   .version(version)
   .exitOverride(e =>
-    process.exit(e.exitCode === 1 ? exitCode.INVALID_OPTIONS : e.exitCode)
+    process.exit(e.exitCode === 1 ? ExitCode.INVALID_OPTIONS : e.exitCode)
   )
 
 const args = program.parse(process.argv).opts()
 
 if (program.args.length) {
   logger.error('Unknown option: ' + program.args[0])
-  process.exit(exitCode.INVALID_OPTIONS)
+  process.exit(ExitCode.INVALID_OPTIONS)
 }
 
 if (args.quiet) {
@@ -124,7 +124,7 @@ async function main() {
   if (!cookies && (!username || !password)) {
     // Neither cookie nor password is given.
     logger.error('Failed to login. Missing username or password.')
-    process.exit(exitCode.WRONG_PASSWORD)
+    process.exit(ExitCode.WRONG_PASSWORD)
   }
 
   // On v1.0.9 strict password checking was removed because of issue #4; log
@@ -155,7 +155,7 @@ async function main() {
     result = await bot.run(!smsLogin, !emailLogin, ignorePassword, screenshot)
   } catch (e: unknown) {
     // unknown error
-    result = exitCode.UNKNOWN_ERROR
+    result = ExitCode.UNKNOWN_ERROR
   }
 
   // Update exit code if force is set.
