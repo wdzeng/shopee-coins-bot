@@ -12,9 +12,9 @@ import {
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { xpathByText } from './util'
-import * as exitCode from './exit-code'
-import * as txt from './text'
-import * as config from './config'
+import * as ExitCode from './exit-code'
+import * as Text from './text'
+import * as Config from './config'
 
 interface ShopeeCredential {
   username: string | undefined
@@ -61,7 +61,7 @@ export default class TaiwanShopeeBot {
     // If username or password is not specified, the login fails.
     if (!this.username || !this.password) {
       logger.error('Failed to login. Missing username or password.')
-      return exitCode.WRONG_PASSWORD
+      return ExitCode.WRONG_PASSWORD
     }
 
     // On v1.0.9 strict password checking was removed; see #4.
@@ -86,50 +86,50 @@ export default class TaiwanShopeeBot {
     )
     await this.driver.wait(
       until.elementIsEnabled(btnLogin),
-      config.TIMEOUT_OPERATION
+      Config.TIMEOUT_OPERATION
     )
     btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
     // Wait for something happens.
     const xpath = [
-      ...txt.WRONG_PASSWORDS.map(e => xpathByText('div', e)),
-      xpathByText('button', txt.PKAY_PUZZLE),
-      xpathByText('div', txt.USE_LINK),
-      xpathByText('div', txt.TOO_MUCH_TRY),
-      xpathByText('div', txt.SHOPEE_REWARD),
-      xpathByText('div', txt.USE_EMAIL_LINK)
+      ...Text.WRONG_PASSWORDS.map(e => xpathByText('div', e)),
+      xpathByText('button', Text.PKAY_PUZZLE),
+      xpathByText('div', Text.USE_LINK),
+      xpathByText('div', Text.TOO_MUCH_TRY),
+      xpathByText('div', Text.SHOPEE_REWARD),
+      xpathByText('div', Text.USE_EMAIL_LINK)
     ].join('|')
     const result = await this.driver.wait(
       until.elementLocated(By.xpath(xpath)),
-      config.TIMEOUT_OPERATION
+      Config.TIMEOUT_OPERATION
     )
     const text = await result.getText()
 
-    if (text === txt.SHOPEE_REWARD) {
+    if (text === Text.SHOPEE_REWARD) {
       // login succeeded
       logger.info('Login succeeded.')
       return
     }
-    if (txt.WRONG_PASSWORDS.includes(text)) {
+    if (Text.WRONG_PASSWORDS.includes(text)) {
       // wrong password
       logger.error('Login failed: wrong password.')
-      return exitCode.WRONG_PASSWORD
+      return ExitCode.WRONG_PASSWORD
     }
-    if (text === txt.PKAY_PUZZLE) {
+    if (text === Text.PKAY_PUZZLE) {
       // need to play puzzle
       logger.error('Login failed: I cannot solve the puzzle.')
-      return exitCode.CANNOT_SOLVE_PUZZLE
+      return ExitCode.CANNOT_SOLVE_PUZZLE
     }
-    if (text === txt.USE_LINK) {
+    if (text === Text.USE_LINK) {
       // need to authenticate via SMS link
       logger.warn('Login failed: please login via SMS.')
-      return exitCode.NEED_SMS_AUTH
+      return ExitCode.NEED_SMS_AUTH
     }
-    if (text === txt.USE_EMAIL_LINK) {
+    if (text === Text.USE_EMAIL_LINK) {
       // need to authenticate via email
       logger.warn('Login failed: please login via email.')
-      return exitCode.NEED_EMAIL_AUTH
+      return ExitCode.NEED_EMAIL_AUTH
     }
 
     // Unknown error
@@ -138,31 +138,31 @@ export default class TaiwanShopeeBot {
   }
 
   private async tryReceiveCoin(): Promise<number> {
-    const xpath = `${xpathByText('button', txt.RECEIVE_COIN)} | ${xpathByText(
+    const xpath = `${xpathByText('button', Text.RECEIVE_COIN)} | ${xpathByText(
       'button',
-      txt.COIN_RECEIVED
+      Text.COIN_RECEIVED
     )}`
     await this.driver.wait(
       until.elementLocated(By.xpath(xpath)),
-      config.TIMEOUT_OPERATION
+      Config.TIMEOUT_OPERATION
     )
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
 
     // Check if coin is already received today.
     const text = await btnReceiveCoin.getText()
-    if (text.startsWith(txt.COIN_RECEIVED)) {
+    if (text.startsWith(Text.COIN_RECEIVED)) {
       // Already received.
       logger.info('Coin already received.')
-      return exitCode.ALREADY_RECEIVED
+      return ExitCode.ALREADY_RECEIVED
     }
 
     await btnReceiveCoin.click()
     await this.driver.wait(
-      until.elementLocated(By.xpath(xpathByText('button', txt.COIN_RECEIVED)))
+      until.elementLocated(By.xpath(xpathByText('button', Text.COIN_RECEIVED)))
     )
 
     logger.info('Coin received.')
-    return exitCode.SUCCESS
+    return ExitCode.SUCCESS
   }
 
   private async waitUntilLoginPermitted(): Promise<number | undefined> {
@@ -172,7 +172,7 @@ export default class TaiwanShopeeBot {
         this.driver
           .wait(
             until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/),
-            config.TIMEOUT_AUTH
+            Config.TIMEOUT_AUTH
           )
           .then(() => res('success'))
           .catch(rej)
@@ -180,8 +180,8 @@ export default class TaiwanShopeeBot {
       const foul = new Promise<'foul'>((res, rej) => {
         this.driver
           .wait(
-            until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))),
-            config.TIMEOUT_AUTH
+            until.elementLocated(By.xpath(xpathByText('div', Text.FAILURE))),
+            Config.TIMEOUT_AUTH
           )
           .then(() => res('foul'))
           .catch(rej)
@@ -211,19 +211,19 @@ export default class TaiwanShopeeBot {
 
     // Login denied.
     logger.error('Login denied.')
-    return exitCode.LOGIN_DENIED
+    return ExitCode.LOGIN_DENIED
   }
 
   private async tryLoginWithSmsLink(): Promise<number | undefined> {
     // Wait until the '使用連結驗證' button is available.
     await this.driver.wait(
-      until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))),
-      config.TIMEOUT_OPERATION
+      until.elementLocated(By.xpath(xpathByText('div', Text.USE_LINK))),
+      Config.TIMEOUT_OPERATION
     )
 
     // Click the '使用連結驗證' button.
     const btnLoginWithLink = await this.driver.findElement(
-      By.xpath(xpathByText('div', txt.USE_LINK))
+      By.xpath(xpathByText('div', Text.USE_LINK))
     )
     await btnLoginWithLink.click()
 
@@ -232,12 +232,12 @@ export default class TaiwanShopeeBot {
 
     // Check if reaching daily limits.
     const reachLimit = await this.driver.findElements(
-      By.xpath(xpathByText('div', txt.TOO_MUCH_TRY))
+      By.xpath(xpathByText('div', Text.TOO_MUCH_TRY))
     )
     if (reachLimit.length > 0) {
       // Failed because reach limits.
       logger.error('Cannot use SMS link to login: reach daily limits.')
-      return exitCode.TOO_MUCH_TRY
+      return ExitCode.TOO_MUCH_TRY
     }
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
@@ -252,13 +252,13 @@ export default class TaiwanShopeeBot {
   private async tryLoginWithEmailLink(): Promise<number | undefined> {
     // Wait until the '透過電子郵件連結驗證' button is available.
     await this.driver.wait(
-      until.elementLocated(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))),
-      config.TIMEOUT_OPERATION
+      until.elementLocated(By.xpath(xpathByText('div', Text.USE_EMAIL_LINK))),
+      Config.TIMEOUT_OPERATION
     )
 
     // Click the '透過電子郵件連結驗證' button.
     const btnLoginWithLink = await this.driver.findElement(
-      By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))
+      By.xpath(xpathByText('div', Text.USE_EMAIL_LINK))
     )
     await btnLoginWithLink.click()
 
@@ -378,7 +378,7 @@ export default class TaiwanShopeeBot {
     }
 
     let result: number | undefined = await this.tryLogin()
-    if (result === exitCode.NEED_SMS_AUTH) {
+    if (result === ExitCode.NEED_SMS_AUTH) {
       // Login failed. Try use the SMS link to login.
       if (disableSmsLogin) {
         logger.error('SMS authentication is required.')
@@ -386,7 +386,7 @@ export default class TaiwanShopeeBot {
       } else {
         result = await this.tryLoginWithSmsLink()
       }
-    } else if (result === exitCode.NEED_EMAIL_AUTH) {
+    } else if (result === ExitCode.NEED_EMAIL_AUTH) {
       // Login failed. Try use email link to login.
       if (disableEmailLogin) {
         logger.error('Email authentication is required.')
@@ -458,7 +458,7 @@ export default class TaiwanShopeeBot {
 
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
-        return exitCode.OPERATION_TIMEOUT_EXCEEDED
+        return ExitCode.OPERATION_TIMEOUT_EXCEEDED
       }
 
       if (e instanceof Error) {
