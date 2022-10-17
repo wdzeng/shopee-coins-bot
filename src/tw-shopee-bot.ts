@@ -84,7 +84,7 @@ export default class TaiwanShopeeBot {
       xpathByText('div', txt.USE_LINK),
       xpathByText('div', txt.TOO_MUCH_TRY),
       xpathByText('div', txt.SHOPEE_REWARD),
-      xpathByText('div', txt.EMAIL_AUTH)
+      xpathByText('div', txt.USE_EMAIL_LINK)
     ].join('|')
     const result = await this.driver.wait(until.elementLocated(By.xpath(xpath)), config.TIMEOUT_OPERATION)
     const text = await result.getText()
@@ -109,7 +109,7 @@ export default class TaiwanShopeeBot {
       logger.warn('Login failed: please login via SMS.')
       return exitCode.NEED_SMS_AUTH
     }
-    if (text === txt.EMAIL_AUTH) {
+    if (text === txt.USE_EMAIL_LINK) {
       // need to authenticate via email
       logger.warn('Login failed: please login via email.')
       return exitCode.NEED_EMAIL_AUTH
@@ -208,10 +208,10 @@ export default class TaiwanShopeeBot {
 
   private async tryLoginWithEmailLink(): Promise<number | undefined> {
     // Wait until the '透過電子郵件連結驗證' button is available.
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.EMAIL_AUTH))), config.TIMEOUT_OPERATION)
+    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))), config.TIMEOUT_OPERATION)
 
     // Click the '透過電子郵件連結驗證' button.
-    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.EMAIL_AUTH)))
+    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK)))
     await btnLoginWithLink.click()
 
     // Wait until the page is redirect.
