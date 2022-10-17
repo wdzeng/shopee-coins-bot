@@ -94,7 +94,7 @@ export default class TaiwanShopeeBot {
     // Wait for something happens.
     const xpath = [
       ...Text.WRONG_PASSWORDS.map(e => xpathByText('div', e)),
-      xpathByText('button', Text.PKAY_PUZZLE),
+      xpathByText('button', Text.PLAY_PUZZLE),
       xpathByText('div', Text.USE_LINK),
       xpathByText('div', Text.TOO_MUCH_TRY),
       xpathByText('div', Text.SHOPEE_REWARD),
@@ -116,7 +116,7 @@ export default class TaiwanShopeeBot {
       logger.error('Login failed: wrong password.')
       return ExitCode.WRONG_PASSWORD
     }
-    if (text === Text.PKAY_PUZZLE) {
+    if (text === Text.PLAY_PUZZLE) {
       // need to play puzzle
       logger.error('Login failed: I cannot solve the puzzle.')
       return ExitCode.CANNOT_SOLVE_PUZZLE
