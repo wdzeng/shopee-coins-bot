@@ -18,8 +18,8 @@
 
 以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container Registry 頁面。
 
-- `latest`, `1`, `1.1`, `1.1.0`
-- `kelly`, `kelly-1`, `kelly-1.1`, `kelly-1.1.0`
+- `latest`, `1`, `1.2`, `1.2.0`
+- `kelly`, `kelly-1`, `kelly-1.2`, `kelly-1.2.0`
 
 映像 `kelly` 不含中文字型，其體積比一般映像小約 70 MiB。如果沒有截圖的需求，建議使用 `kelly`。
 
