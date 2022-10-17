@@ -15,18 +15,24 @@ program
   .option('-p, --pass <PASSWORD>', 'shopee password')
   .option('-P, --path-to-pass <FILE>', 'password file')
   .option('-c, --cookie <FILE>', 'cookie file')
-  .option('-i, --ignore-password', 'do not save username and password with cookies')
+  .option(
+    '-i, --ignore-password',
+    'do not save username and password with cookies'
+  )
   .option('-x, --no-sms', 'do not use SMS login')
   .option('-y, --no-email', 'do not use email login')
   .option('-q, --quiet', 'do not output message')
-  .option('-s, --screenshot <DIR>', 'directory to save screenshot if checkin failed')
+  .option(
+    '-s, --screenshot <DIR>',
+    'directory to save screenshot if checkin failed'
+  )
   .option('-f, --force', 'no error if coins already received')
   .version(version)
-  .exitOverride((e) => process.exit(e.exitCode === 1 ? exitCode.INVALID_OPTIONS : e.exitCode))
+  .exitOverride(e =>
+    process.exit(e.exitCode === 1 ? exitCode.INVALID_OPTIONS : e.exitCode)
+  )
 
-const args = program
-  .parse(process.argv)
-  .opts()
+const args = program.parse(process.argv).opts()
 
 if (program.args.length) {
   logger.error('Unknown option: ' + program.args[0])
@@ -37,15 +43,12 @@ if (args.quiet) {
   if (process.env['DEBUG']) {
     logger.setDefaultLevel('debug')
     logger.warn('Option `--quiet` is ignored in debug mode.')
-  }
-  else {
+  } else {
     logger.setDefaultLevel('warn')
   }
-}
-else if (process.env['DEBUG']) {
+} else if (process.env['DEBUG']) {
   logger.setDefaultLevel('debug')
-}
-else {
+} else {
   logger.setDefaultLevel('info')
 }
 
@@ -61,7 +64,9 @@ async function getPassword(): Promise<string | undefined> {
 
   pass = args.pass
   if (pass) {
-    logger.warn('Passing password from command line is considered insecure. Should use environment variable or password file.')
+    logger.warn(
+      'Passing password from command line is considered insecure. Should use environment variable or password file.'
+    )
     return pass
   }
 
@@ -75,7 +80,9 @@ async function getPassword(): Promise<string | undefined> {
       // Get the first line of password file
       const passwordLines = pass.split('\n')
       if (passwordLines.length > 1) {
-        logger.warn('Read more than one lines from password file. Only the first line is considered password.')
+        logger.warn(
+          'Read more than one lines from password file. Only the first line is considered password.'
+        )
       }
       pass = passwordLines[0]
       logger.debug('Password read from file.')
@@ -109,7 +116,9 @@ async function main() {
   const screenshot: string | undefined = args.screenshot
 
   if (ignorePassword) {
-    logger.warn('option `--ignore-password` has been deprecated and will be removed in the future.')
+    logger.warn(
+      'option `--ignore-password` has been deprecated and will be removed in the future.'
+    )
   }
 
   if (!cookies && (!username || !password)) {
@@ -124,13 +133,19 @@ async function main() {
   if (password && !isValidPassword(password)) {
     // logger.error('Login failed: wrong password.')
     // process.exit(EXIT_CODE_WRONG_PASSWORD)
-    logger.warn('Password length does not meet the requirement (length 8-16). Was this password set long time ago?')
-    logger.warn('I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4')
+    logger.warn(
+      'Password length does not meet the requirement (length 8-16). Was this password set long time ago?'
+    )
+    logger.warn(
+      'I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4'
+    )
   }
 
   // Warn if using screenshot in kelly image
   if (process.env['IMAGE_VARIANT'] === 'kelly' && screenshot) {
-    logger.warn('You are using kelly image. You may not see CJK characters in screenshots.')
+    logger.warn(
+      'You are using kelly image. You may not see CJK characters in screenshots.'
+    )
   }
 
   // Run bot.
