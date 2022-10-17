@@ -35,12 +35,12 @@ export default class TaiwanShopeeBot {
   private async tryLogin(): Promise<number | undefined> {
     logger.info('Start to login shopee.')
 
-    // Go to the login page. If the user is already logged in, the webpage
-    // will be soon redirected to the coin check-in page. Since the login form
-    // still shows temporarily in this case, we could not determine if the user
-    // is not logged in even if the login form appears. An alternative way is
-    // to wait for a delay (4s), and if the webpage stays at the login page, we
-    // assert that the user is not logged in.
+    // Go to the login page. If the user is already logged in, the webpage will
+    // be soon redirected to the coin check-in page. Since the login form still
+    // shows temporarily in this case, we could not determine if the user is not
+    // logged in even if the login form appears. An alternative way is to wait
+    // for a delay (4s), and if the webpage stays at the login page, we assert
+    // that the user is not logged in.
     const urlLogin =
       'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
     await this.driver.get(urlLogin)
@@ -50,8 +50,8 @@ export default class TaiwanShopeeBot {
 
     const urlCoin = 'https://shopee.tw/shopee-coins'
     if (curUrl === urlCoin) {
-      // The webpage is redirected to the coin check-in page and therefore
-      // the user must have been logged in.
+      // The webpage is redirected to the coin check-in page and therefore the
+      // user must have been logged in.
       logger.info('Already logged in.')
       return
     }
@@ -127,12 +127,12 @@ export default class TaiwanShopeeBot {
       return ExitCode.NEED_SMS_AUTH
     }
     if (text === Text.USE_EMAIL_LINK) {
-      // need to authenticate via email
+      // need to authenticate via email link
       logger.warn('Login failed: please login via email.')
       return ExitCode.NEED_EMAIL_AUTH
     }
 
-    // Unknown error
+    // unknown error
     logger.debug(`Unexpected error occurred. Fetched text by xpath: ${text}`)
     throw new Error('Unknown error occurred when trying to login.')
   }
