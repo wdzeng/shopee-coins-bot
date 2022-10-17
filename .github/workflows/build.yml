@@ -31,8 +31,8 @@ jobs:
           build-args: |
             BASE_IMAGE=alpine-base
             VARIANT=kelly
-          repo_description: Get Shopee coins everyday
-          repo_license: MIT
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
       - name: Build regular image
         uses: wdzeng/image@v2
         with:
@@ -43,8 +43,8 @@ jobs:
           build-args: |
             BASE_IMAGE=alpine-font
             VARIANT=''
-          repo_description: Get Shopee coins everyday
-          repo_license: MIT
+          repo-description: Get Shopee coins everyday
+          repo-license: MIT
 
   tag:
     name: Add tags to repository
