@@ -145,13 +145,13 @@ export default class TaiwanShopeeBot {
     try {
       const success = new Promise<'success'>((res, rej) => {
         this.driver
-          .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), config.TIMEOUT_SMS_AUTH)
+          .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), config.TIMEOUT_AUTH)
           .then(() => res('success'))
           .catch(rej)
       })
       const foul = new Promise<'foul'>((res, rej) => {
         this.driver
-          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_SMS_AUTH)
+          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_AUTH)
           .then(() => res('foul'))
           .catch(rej)
       })
