@@ -17,6 +17,7 @@ program
   .option('-c, --cookie <FILE>', 'cookie file')
   .option('-i, --ignore-password', 'do not save username and password with cookies')
   .option('-x, --no-sms', 'do not use SMS login')
+  .option('-y, --no-email', 'do not use email login')
   .option('-q, --quiet', 'do not output message')
   .option('-s, --screenshot <DIR>', 'directory to save screenshot if checkin failed')
   .option('-f, --force', 'no error if coins already received')
@@ -103,6 +104,7 @@ async function main() {
   const password: string | undefined = await getPassword()
   const cookies: string | undefined = getCookies()
   const smsLogin: boolean = args.sms
+  const emailLogin: boolean = args.email
   const ignorePassword: boolean = args.ignorePassword
   const screenshot: string | undefined = args.screenshot
 
@@ -135,7 +137,7 @@ async function main() {
   const bot = new Bot(username, password, cookies)
   let result: number
   try {
-    result = await bot.run(!smsLogin, ignorePassword, screenshot)
+    result = await bot.run(!smsLogin, !emailLogin, ignorePassword, screenshot)
   } catch (e: unknown) {
     // unknown error
     result = exitCode.UNKNOWN_ERROR

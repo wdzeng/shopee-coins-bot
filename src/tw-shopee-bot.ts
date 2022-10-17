@@ -110,8 +110,8 @@ export default class TaiwanShopeeBot {
       return exitCode.NEED_SMS_AUTH
     }
     if (text === txt.EMAIL_AUTH) {
-      // need to authenticate via email; this is currently not supported
-      logger.error('Login failed: need email Auth')
+      // need to authenticate via email
+      logger.warn('Login failed: please login via email.')
       return exitCode.NEED_EMAIL_AUTH
     }
 
@@ -140,29 +140,7 @@ export default class TaiwanShopeeBot {
     return exitCode.SUCCESS
   }
 
-  private async tryLoginWithSmsLink(): Promise<number | undefined> {
-    // Wait until the '使用連結驗證' button is available.
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))), config.TIMEOUT_OPERATION)
-
-    // Click the '使用連結驗證' button.
-    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_LINK)))
-    await btnLoginWithLink.click()
-
-    // Wait until the page is redirect.
-    await this.driver.wait(until.urlIs('https://shopee.tw/verify/link'))
-
-    // Check if reaching daily limits.
-    const reachLimit = await this.driver.findElements(By.xpath(xpathByText('div', txt.TOO_MUCH_TRY)))
-    if (reachLimit.length > 0) {
-      // Failed because reach limits.
-      logger.error('Cannot use SMS link to login: reach daily limits.')
-      return exitCode.TOO_MUCH_TRY
-    }
-
-    // Now user should click the link sent from Shopee to her mobile via SMS.
-    // Wait for user completing the process; by the time the website should be
-    // redirected to coin page.
-    logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+  private async waitUntilLoginPermitted(): Promise<number | undefined> {
     let result: 'success' | 'foul'
     try {
       const success = new Promise<'success'>((res, rej) => {
@@ -200,6 +178,52 @@ export default class TaiwanShopeeBot {
     // Login denied.
     logger.error('Login denied.')
     return exitCode.LOGIN_DENIED
+  }
+
+  private async tryLoginWithSmsLink(): Promise<number | undefined> {
+    // Wait until the '使用連結驗證' button is available.
+    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))), config.TIMEOUT_OPERATION)
+
+    // Click the '使用連結驗證' button.
+    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_LINK)))
+    await btnLoginWithLink.click()
+
+    // Wait until the page is redirect.
+    await this.driver.wait(until.urlIs('https://shopee.tw/verify/link'))
+
+    // Check if reaching daily limits.
+    const reachLimit = await this.driver.findElements(By.xpath(xpathByText('div', txt.TOO_MUCH_TRY)))
+    if (reachLimit.length > 0) {
+      // Failed because reach limits.
+      logger.error('Cannot use SMS link to login: reach daily limits.')
+      return exitCode.TOO_MUCH_TRY
+    }
+
+    // Now user should click the link sent from Shopee to her mobile via SMS.
+    // Wait for user completing the process; by the time the website should be
+    // redirected to coin page.
+    logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    return await this.waitUntilLoginPermitted()
+  }
+
+  private async tryLoginWithEmailLink(): Promise<number | undefined> {
+    // Wait until the '透過電子郵件連結驗證' button is available.
+    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.EMAIL_AUTH))), config.TIMEOUT_OPERATION)
+
+    // Click the '透過電子郵件連結驗證' button.
+    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.EMAIL_AUTH)))
+    await btnLoginWithLink.click()
+
+    // Wait until the page is redirect.
+    await this.driver.wait(until.urlIs('https://shopee.tw/verify/email-link'))
+
+    // TODO: check if reaching daily limits.
+
+    // Now user should click the link sent from Shopee to her inbox.
+    // Wait for user completing the process; by the time the website should be
+    // redirected to coin page.
+    logger.warn('An authentication mail is sent to your inbox. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    return await this.waitUntilLoginPermitted()
   }
 
   private async saveCookies(ignorePassword: boolean): Promise<void> {
@@ -292,7 +316,7 @@ export default class TaiwanShopeeBot {
       .build()
   }
 
-  private async runBot(disableSmsLogin: boolean, ignorePassword: boolean): Promise<number> {
+  private async runBot(disableSmsLogin: boolean, disableEmailLogin: boolean, ignorePassword: boolean): Promise<number> {
     if (this.pathCookie !== undefined) {
       await this.loadCookies(ignorePassword)
     }
@@ -309,6 +333,15 @@ export default class TaiwanShopeeBot {
       }
       else {
         result = await this.tryLoginWithSmsLink()
+      }
+    }
+    else if (result === exitCode.NEED_EMAIL_AUTH) {
+      // Login failed. Try use email link to login.
+      if (disableEmailLogin) {
+        logger.error('Email authentication is required.')
+      }
+      else {
+        result = await this.tryLoginWithEmailLink()
       }
     }
 
@@ -349,11 +382,11 @@ export default class TaiwanShopeeBot {
     }
   }
 
-  async run(disableSmsLogin: boolean, ignorePassword: boolean, screenshotPath: string | undefined): Promise<number> {
+  async run(disableSmsLogin: boolean, disableEmailLogin: boolean, ignorePassword: boolean, screenshotPath: string | undefined): Promise<number> {
     await this.initDriver()
 
     try {
-      const exitCode = await this.runBot(disableSmsLogin, ignorePassword)
+      const exitCode = await this.runBot(disableSmsLogin, disableEmailLogin, ignorePassword)
       if (exitCode !== 0) {
         // If not succeeded then take a screenshot.
         await this.takeScreenshot(screenshotPath)
