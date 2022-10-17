@@ -1,6 +1,14 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { Builder, By, IWebDriverOptionsCookie, until, WebDriver, error, Browser } from 'selenium-webdriver'
+import {
+  Builder,
+  By,
+  IWebDriverOptionsCookie,
+  until,
+  WebDriver,
+  error,
+  Browser
+} from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
 import logger from 'loglevel'
 import { xpathByText } from './util'
@@ -22,7 +30,7 @@ export default class TaiwanShopeeBot {
     private username: string | undefined,
     private password: string | undefined,
     private pathCookie: string | undefined
-  ) { }
+  ) {}
 
   private async tryLogin(): Promise<number | undefined> {
     logger.info('Start to login shopee.')
@@ -33,7 +41,8 @@ export default class TaiwanShopeeBot {
     // is not logged in even if the login form appears. An alternative way is
     // to wait for a delay (4s), and if the webpage stays at the login page, we
     // assert that the user is not logged in.
-    const urlLogin = 'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
+    const urlLogin =
+      'https://shopee.tw/buyer/login?from=https%3A%2F%2Fshopee.tw%2Fuser%2Fcoin&next=https%3A%2F%2Fshopee.tw%2Fshopee-coins'
     await this.driver.get(urlLogin)
     await new Promise(res => setTimeout(res, 4000))
     const curUrl = await this.driver.getCurrentUrl()
@@ -72,8 +81,13 @@ export default class TaiwanShopeeBot {
 
     // Submit form.
     // Wait until the login button is enabled.
-    const btnLogin = await this.driver.findElement(By.xpath(xpathByText('button', '登入')))
-    await this.driver.wait(until.elementIsEnabled(btnLogin), config.TIMEOUT_OPERATION)
+    const btnLogin = await this.driver.findElement(
+      By.xpath(xpathByText('button', '登入'))
+    )
+    await this.driver.wait(
+      until.elementIsEnabled(btnLogin),
+      config.TIMEOUT_OPERATION
+    )
     btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
@@ -86,7 +100,10 @@ export default class TaiwanShopeeBot {
       xpathByText('div', txt.SHOPEE_REWARD),
       xpathByText('div', txt.USE_EMAIL_LINK)
     ].join('|')
-    const result = await this.driver.wait(until.elementLocated(By.xpath(xpath)), config.TIMEOUT_OPERATION)
+    const result = await this.driver.wait(
+      until.elementLocated(By.xpath(xpath)),
+      config.TIMEOUT_OPERATION
+    )
     const text = await result.getText()
 
     if (text === txt.SHOPEE_REWARD) {
@@ -121,8 +138,14 @@ export default class TaiwanShopeeBot {
   }
 
   private async tryReceiveCoin(): Promise<number> {
-    const xpath = `${xpathByText('button', txt.RECEIVE_COIN)} | ${xpathByText('button', txt.COIN_RECEIVED)}`
-    await this.driver.wait(until.elementLocated(By.xpath(xpath)), config.TIMEOUT_OPERATION)
+    const xpath = `${xpathByText('button', txt.RECEIVE_COIN)} | ${xpathByText(
+      'button',
+      txt.COIN_RECEIVED
+    )}`
+    await this.driver.wait(
+      until.elementLocated(By.xpath(xpath)),
+      config.TIMEOUT_OPERATION
+    )
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
 
     // Check if coin is already received today.
@@ -134,7 +157,9 @@ export default class TaiwanShopeeBot {
     }
 
     await btnReceiveCoin.click()
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('button', txt.COIN_RECEIVED))))
+    await this.driver.wait(
+      until.elementLocated(By.xpath(xpathByText('button', txt.COIN_RECEIVED)))
+    )
 
     logger.info('Coin received.')
     return exitCode.SUCCESS
@@ -145,22 +170,31 @@ export default class TaiwanShopeeBot {
     try {
       const success = new Promise<'success'>((res, rej) => {
         this.driver
-          .wait(until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/), config.TIMEOUT_AUTH)
+          .wait(
+            until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/),
+            config.TIMEOUT_AUTH
+          )
           .then(() => res('success'))
           .catch(rej)
       })
       const foul = new Promise<'foul'>((res, rej) => {
         this.driver
-          .wait(until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))), config.TIMEOUT_AUTH)
+          .wait(
+            until.elementLocated(By.xpath(xpathByText('div', txt.FAILURE))),
+            config.TIMEOUT_AUTH
+          )
           .then(() => res('foul'))
           .catch(rej)
       })
       result = await Promise.any([success, foul])
     } catch (e: unknown) {
       // timeout error
-      if (e instanceof AggregateError && e.errors.length === 2
-        && e.errors[0] instanceof error.TimeoutError
-        && e.errors[1] instanceof error.TimeoutError) {
+      if (
+        e instanceof AggregateError &&
+        e.errors.length === 2 &&
+        e.errors[0] instanceof error.TimeoutError &&
+        e.errors[1] instanceof error.TimeoutError
+      ) {
         logger.error('You are too slow. Bye bye.')
         throw e.errors[0]
       }
@@ -182,17 +216,24 @@ export default class TaiwanShopeeBot {
 
   private async tryLoginWithSmsLink(): Promise<number | undefined> {
     // Wait until the '使用連結驗證' button is available.
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))), config.TIMEOUT_OPERATION)
+    await this.driver.wait(
+      until.elementLocated(By.xpath(xpathByText('div', txt.USE_LINK))),
+      config.TIMEOUT_OPERATION
+    )
 
     // Click the '使用連結驗證' button.
-    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_LINK)))
+    const btnLoginWithLink = await this.driver.findElement(
+      By.xpath(xpathByText('div', txt.USE_LINK))
+    )
     await btnLoginWithLink.click()
 
     // Wait until the page is redirect.
     await this.driver.wait(until.urlIs('https://shopee.tw/verify/link'))
 
     // Check if reaching daily limits.
-    const reachLimit = await this.driver.findElements(By.xpath(xpathByText('div', txt.TOO_MUCH_TRY)))
+    const reachLimit = await this.driver.findElements(
+      By.xpath(xpathByText('div', txt.TOO_MUCH_TRY))
+    )
     if (reachLimit.length > 0) {
       // Failed because reach limits.
       logger.error('Cannot use SMS link to login: reach daily limits.')
@@ -202,16 +243,23 @@ export default class TaiwanShopeeBot {
     // Now user should click the link sent from Shopee to her mobile via SMS.
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
-    logger.warn('An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    logger.warn(
+      'An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.'
+    )
     return await this.waitUntilLoginPermitted()
   }
 
   private async tryLoginWithEmailLink(): Promise<number | undefined> {
     // Wait until the '透過電子郵件連結驗證' button is available.
-    await this.driver.wait(until.elementLocated(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))), config.TIMEOUT_OPERATION)
+    await this.driver.wait(
+      until.elementLocated(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))),
+      config.TIMEOUT_OPERATION
+    )
 
     // Click the '透過電子郵件連結驗證' button.
-    const btnLoginWithLink = await this.driver.findElement(By.xpath(xpathByText('div', txt.USE_EMAIL_LINK)))
+    const btnLoginWithLink = await this.driver.findElement(
+      By.xpath(xpathByText('div', txt.USE_EMAIL_LINK))
+    )
     await btnLoginWithLink.click()
 
     // Wait until the page is redirect.
@@ -222,7 +270,9 @@ export default class TaiwanShopeeBot {
     // Now user should click the link sent from Shopee to her inbox.
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
-    logger.warn('An authentication mail is sent to your inbox. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.')
+    logger.warn(
+      'An authentication mail is sent to your inbox. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.'
+    )
     return await this.waitUntilLoginPermitted()
   }
 
@@ -243,8 +293,7 @@ export default class TaiwanShopeeBot {
       // Suppress error.
       if (e instanceof Error) {
         logger.warn('Failed to save cookie: ' + e.message)
-      }
-      else {
+      } else {
         logger.warn('Failed to save cookie.')
       }
     }
@@ -263,14 +312,14 @@ export default class TaiwanShopeeBot {
 
       // If the json is an array, then the cookie is generate by bot version
       // <= v1.0.2.
-      const json: IWebDriverOptionsCookie[] | ShopeeCredential = JSON.parse(cookiesStr)
+      const json: IWebDriverOptionsCookie[] | ShopeeCredential =
+        JSON.parse(cookiesStr)
       let cookies: IWebDriverOptionsCookie[]
       if (Array.isArray(json)) {
         // old version bot (<= v1.0.2)
         logger.warn('The cookies are saved by old version shopee coins bot.')
         cookies = json
-      }
-      else {
+      } else {
         if (!ignorePassword) {
           // If username or password is not explicitly set, loads if from
           // credential.
@@ -281,15 +330,14 @@ export default class TaiwanShopeeBot {
       }
 
       const options = this.driver.manage()
-      await Promise.all(cookies.map((cookie) => options.addCookie(cookie)))
+      await Promise.all(cookies.map(cookie => options.addCookie(cookie)))
       logger.info('Cookies loaded.')
     } catch (e: unknown) {
       // Cannot load cookies; ignore. This may be due to invalid cookie string
       // pattern.
       if (e instanceof Error) {
         logger.error('Failed to load cookies: ' + e.message)
-      }
-      else {
+      } else {
         logger.error('Failed to load cookies.')
       }
     }
@@ -316,12 +364,17 @@ export default class TaiwanShopeeBot {
       .build()
   }
 
-  private async runBot(disableSmsLogin: boolean, disableEmailLogin: boolean, ignorePassword: boolean): Promise<number> {
+  private async runBot(
+    disableSmsLogin: boolean,
+    disableEmailLogin: boolean,
+    ignorePassword: boolean
+  ): Promise<number> {
     if (this.pathCookie !== undefined) {
       await this.loadCookies(ignorePassword)
-    }
-    else {
-      logger.info('No cookies given. Will try to login using username and password.')
+    } else {
+      logger.info(
+        'No cookies given. Will try to login using username and password.'
+      )
     }
 
     let result: number | undefined = await this.tryLogin()
@@ -330,17 +383,14 @@ export default class TaiwanShopeeBot {
       if (disableSmsLogin) {
         logger.error('SMS authentication is required.')
         return result
-      }
-      else {
+      } else {
         result = await this.tryLoginWithSmsLink()
       }
-    }
-    else if (result === exitCode.NEED_EMAIL_AUTH) {
+    } else if (result === exitCode.NEED_EMAIL_AUTH) {
       // Login failed. Try use email link to login.
       if (disableEmailLogin) {
         logger.error('Email authentication is required.')
-      }
-      else {
+      } else {
         result = await this.tryLoginWithEmailLink()
       }
     }
@@ -361,7 +411,9 @@ export default class TaiwanShopeeBot {
     return await this.tryReceiveCoin()
   }
 
-  private async takeScreenshot(screenshotPath: string | undefined): Promise<void> {
+  private async takeScreenshot(
+    screenshotPath: string | undefined
+  ): Promise<void> {
     if (screenshotPath === undefined) {
       // If path is not specified, do nothing.
       return
@@ -375,25 +427,32 @@ export default class TaiwanShopeeBot {
     } catch (e: unknown) {
       if (e instanceof Error) {
         logger.error('Failed to save screenshot: ' + e.message)
-      }
-      else {
+      } else {
         logger.error('Failed to save screenshot.')
       }
     }
   }
 
-  async run(disableSmsLogin: boolean, disableEmailLogin: boolean, ignorePassword: boolean, screenshotPath: string | undefined): Promise<number> {
+  async run(
+    disableSmsLogin: boolean,
+    disableEmailLogin: boolean,
+    ignorePassword: boolean,
+    screenshotPath: string | undefined
+  ): Promise<number> {
     await this.initDriver()
 
     try {
-      const exitCode = await this.runBot(disableSmsLogin, disableEmailLogin, ignorePassword)
+      const exitCode = await this.runBot(
+        disableSmsLogin,
+        disableEmailLogin,
+        ignorePassword
+      )
       if (exitCode !== 0) {
         // If not succeeded then take a screenshot.
         await this.takeScreenshot(screenshotPath)
       }
       return exitCode
-    }
-    catch (e: unknown) {
+    } catch (e: unknown) {
       // If not succeeded then take a screenshot.
       await this.takeScreenshot(screenshotPath)
 
@@ -404,15 +463,13 @@ export default class TaiwanShopeeBot {
 
       if (e instanceof Error) {
         logger.error('Unexpected error: ' + e.message)
-      }
-      else {
+      } else {
         logger.error('Unexpected error occurred.')
         logger.debug(e)
       }
 
       throw e
-    }
-    finally {
+    } finally {
       await this.driver.close()
     }
   }
