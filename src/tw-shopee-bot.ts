@@ -1,20 +1,20 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import logger from 'loglevel'
 import {
+  Browser,
   Builder,
   By,
+  error,
   IWebDriverOptionsCookie,
   until,
   WebDriver,
-  error,
-  Browser
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
-import logger from 'loglevel'
-import { xpathByText } from './util'
+import * as Config from './config'
 import * as ExitCode from './exit-code'
 import * as Text from './text'
-import * as Config from './config'
+import { xpathByText } from './util'
 
 interface ShopeeCredential {
   username: string | undefined
