@@ -9,7 +9,7 @@
   "author": "hyperbola",
   "packageManager": "pnpm@7.13.4",
   "dependencies": {
-    "commander": "^9.4.1",
+    "commander": "^10.0.0",
     "loglevel": "^1.8.0",
     "selenium-webdriver": "^4.5.0"
   },
