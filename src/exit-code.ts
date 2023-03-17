@@ -1,11 +1,13 @@
-export const SUCCESS = 0
-export const ALREADY_RECEIVED = 1
-export const NEED_SMS_AUTH = 2
-export const CANNOT_SOLVE_PUZZLE = 3
-export const OPERATION_TIMEOUT_EXCEEDED = 4
-export const NEED_EMAIL_AUTH = 7
-export const LOGIN_DENIED = 6
-export const TOO_MUCH_TRY = 69
-export const INVALID_OPTIONS = 77
-export const WRONG_PASSWORD = 87
-export const UNKNOWN_ERROR = 88
+export enum ExitCode {
+  SUCCESS = 0,
+  ALREADY_RECEIVED = 1,
+  NEED_SMS_AUTH = 2,
+  CANNOT_SOLVE_PUZZLE = 3,
+  OPERATION_TIMEOUT_EXCEEDED = 4,
+  NEED_EMAIL_AUTH = 5,
+  LOGIN_DENIED = 6,
+  TOO_MUCH_TRY = 69,
+  INVALID_OPTIONS = 77,
+  WRONG_PASSWORD = 87,
+  UNKNOWN_ERROR = 88,
+}
