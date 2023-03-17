@@ -64,7 +64,8 @@ async function getPassword(): Promise<string | undefined> {
   pass = args.pass
   if (pass) {
     logger.warn(
-      'Passing password from command line is considered insecure. Should use environment variable or password file.'
+      'Passing password from command line is considered insecure. ' +
+        'Should use environment variable or password file.'
     )
     return pass
   }
@@ -80,7 +81,8 @@ async function getPassword(): Promise<string | undefined> {
       const passwordLines = pass.split('\n')
       if (passwordLines.length > 1) {
         logger.warn(
-          'Read more than one lines from password file. Only the first line is considered password.'
+          'Read more than one lines from password file. ' +
+            'Only the first line is considered password.'
         )
       }
       pass = passwordLines[0]
@@ -116,7 +118,8 @@ async function main() {
 
   if (ignorePassword) {
     logger.warn(
-      'option `--ignore-password` has been deprecated and will be removed in the future.'
+      'Option `--ignore-password` is deprecated and will be removed ' +
+        'in the future.'
     )
   }
 
@@ -133,17 +136,20 @@ async function main() {
     // logger.error('Login failed: wrong password.')
     // process.exit(EXIT_CODE_WRONG_PASSWORD)
     logger.warn(
-      'Password length does not meet the requirement (length 8-16). Was this password set long time ago?'
+      'Password length does not meet the requirement (length 8-16). ' +
+        'Was this password set long time ago?'
     )
     logger.warn(
-      'I will let you go. Please refer to this issue: https://github.com/wdzeng/shopee-coins-bot/issues/4'
+      'I will let you go. Please refer to this issue: ' +
+        'https://github.com/wdzeng/shopee-coins-bot/issues/4'
     )
   }
 
   // Warn if using screenshot in kelly image
   if (process.env['IMAGE_VARIANT'] === 'kelly' && screenshot) {
     logger.warn(
-      'You are using kelly image. You may not see CJK characters in screenshots.'
+      'You are using kelly image. ' +
+        'You may not see CJK characters in screenshots.'
     )
   }
 
