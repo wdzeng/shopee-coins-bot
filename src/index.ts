@@ -4,9 +4,8 @@ import { program } from 'commander'
 import logger from 'loglevel'
 import * as ExitCode from './exit-code'
 import Bot from './tw-shopee-bot'
-import { isValidPassword } from './util'
+import { isValidPassword, version } from './util'
 
-const version = '1.2.0'
 const majorVersion = version.split('.')[0]
 program
   .name(`docker run hyperbola/shopee-coins-bot:${majorVersion}`)
