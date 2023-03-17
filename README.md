@@ -18,7 +18,7 @@
 
 以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container Registry 頁面。
 
-- `latest`, `1`, `1.4`, `1.4.0`
+- `latest`, `1`, `1.2`, `1.2.0`
 
 ### 使用說明
 
