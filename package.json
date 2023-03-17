@@ -7,16 +7,16 @@
     "clean": "rm -rf dist src/*.js"
   },
   "author": "hyperbola",
-  "packageManager": "pnpm@7.13.4",
+  "packageManager": "pnpm@7.29.3",
   "dependencies": {
-    "commander": "^9.4.1",
-    "loglevel": "^1.8.0",
-    "selenium-webdriver": "^4.5.0"
+    "commander": "^10.0.0",
+    "loglevel": "^1.8.1",
+    "selenium-webdriver": "^4.8.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.66",
-    "@types/selenium-webdriver": "^4.1.5",
-    "@vercel/ncc": "^0.34.0",
-    "typescript": "^4.8.4"
+    "@types/node": "^18.15.3",
+    "@types/selenium-webdriver": "^4.1.13",
+    "@vercel/ncc": "^0.36.1",
+    "typescript": "^4.9.5"
   }
 }
