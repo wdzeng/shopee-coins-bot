@@ -1,33 +1,33 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@types/node': ^16.11.66
-  '@types/selenium-webdriver': ^4.1.5
-  '@vercel/ncc': ^0.34.0
-  commander: ^9.4.1
-  loglevel: ^1.8.0
-  selenium-webdriver: ^4.5.0
-  typescript: ^4.8.4
+  '@types/node': ^18.15.3
+  '@types/selenium-webdriver': ^4.1.13
+  '@vercel/ncc': ^0.36.1
+  commander: ^10.0.0
+  loglevel: ^1.8.1
+  selenium-webdriver: ^4.8.1
+  typescript: ^4.9.5
 
 dependencies:
-  commander: 9.4.1
-  loglevel: 1.8.0
-  selenium-webdriver: 4.5.0
+  commander: 10.0.0
+  loglevel: 1.8.1
+  selenium-webdriver: 4.8.1
 
 devDependencies:
-  '@types/node': 16.11.66
-  '@types/selenium-webdriver': 4.1.5
-  '@vercel/ncc': 0.34.0
-  typescript: 4.8.4
+  '@types/node': 18.15.3
+  '@types/selenium-webdriver': 4.1.13
+  '@vercel/ncc': 0.36.1
+  typescript: 4.9.5
 
 packages:
 
-  /@types/node/16.11.66:
-    resolution: {integrity: sha512-+xvMrGl3eAygKcf5jm+4zA4tbfEgmKM9o6/glTmN0RFVdu2VuFXMYYtRmuv3zTGCgAYMnEZLde3B7BTp+Yxcig==}
+  /@types/node/18.15.3:
+    resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}
     dev: true
 
-  /@types/selenium-webdriver/4.1.5:
-    resolution: {integrity: sha512-Lfu97JK5b2jAxCUHH8uMjmhUiQZCGDyVzSAskFFZuWcprtcwjMkEPZE/SiIM5hOGQJVs982BAF26a3kmw8iiJw==}
+  /@types/selenium-webdriver/4.1.13:
+    resolution: {integrity: sha512-kGpIh7bvu4HGCJXl4PEJ53kzpG4iXlRDd66SNNCfJ58QhFuk9skOm57lVffZap5ChEOJwbge/LJ9IVGVC8EEOg==}
     dependencies:
       '@types/ws': 8.5.3
     dev: true
@@ -35,11 +35,11 @@ packages:
   /@types/ws/8.5.3:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
-      '@types/node': 16.11.66
+      '@types/node': 18.15.3
     dev: true
 
-  /@vercel/ncc/0.34.0:
-    resolution: {integrity: sha512-G9h5ZLBJ/V57Ou9vz5hI8pda/YQX5HQszCs3AmIus3XzsmRn/0Ptic5otD3xVST8QLKk7AMk7AqpsyQGN7MZ9A==}
+  /@vercel/ncc/0.36.1:
+    resolution: {integrity: sha512-S4cL7Taa9yb5qbv+6wLgiKVZ03Qfkc4jGRuiUQMQ8HGBD5pcNRnHeYM33zBvJE4/zJGjJJ8GScB+WmTsn9mORw==}
     hasBin: true
     dev: true
 
@@ -54,9 +54,9 @@ packages:
       concat-map: 0.0.1
     dev: false
 
-  /commander/9.4.1:
-    resolution: {integrity: sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==}
-    engines: {node: ^12.20.0 || >=14}
+  /commander/10.0.0:
+    resolution: {integrity: sha512-zS5PnTI22FIRM6ylNW8G4Ap0IEOyk62fhLSD0+uHRT9McRCLGpkVNvao4bjimpK/GShynyQkFFxHhwMcETmduA==}
+    engines: {node: '>=14'}
     dev: false
 
   /concat-map/0.0.1:
@@ -116,8 +116,8 @@ packages:
       immediate: 3.0.6
     dev: false
 
-  /loglevel/1.8.0:
-    resolution: {integrity: sha512-G6A/nJLRgWOuuwdNuA6koovfEV1YpqqAG4pRUlFaz3jj2QNZ8M4vBqnVA+HBTmU/AMNUtlOsMmSpF6NyOjztbA==}
+  /loglevel/1.8.1:
+    resolution: {integrity: sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==}
     engines: {node: '>= 0.6.0'}
     dev: false
 
@@ -169,13 +169,13 @@ packages:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
     dev: false
 
-  /selenium-webdriver/4.5.0:
-    resolution: {integrity: sha512-9mSFii+lRwcnT2KUAB1kqvx6+mMiiQHH60Y0VUtr3kxxi3oZ3CV3B8e2nuJ7T4SPb+Q6VA0swswe7rYpez07Bg==}
+  /selenium-webdriver/4.8.1:
+    resolution: {integrity: sha512-p4MtfhCQdcV6xxkS7eI0tQN6+WNReRULLCAuT4RDGkrjfObBNXMJ3WT8XdK+aXTr5nnBKuh+PxIevM0EjJgkxA==}
     engines: {node: '>= 14.20.0'}
     dependencies:
       jszip: 3.10.1
       tmp: 0.2.1
-      ws: 8.9.0
+      ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -198,8 +198,8 @@ packages:
       rimraf: 3.0.2
     dev: false
 
-  /typescript/4.8.4:
-    resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
+  /typescript/4.9.5:
+    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
@@ -212,12 +212,12 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: false
 
-  /ws/8.9.0:
-    resolution: {integrity: sha512-Ja7nszREasGaYUYCI2k4lCKIRTt+y7XuqVoHR44YpI49TtryyqbqvDMn5eqfW7e6HzTukDRIsXqzVHScqRcafg==}
+  /ws/8.13.0:
+    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
+      utf-8-validate: '>=5.0.2'
     peerDependenciesMeta:
       bufferutil:
         optional: true
