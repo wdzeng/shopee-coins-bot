@@ -67,6 +67,9 @@ async function getPassword(): Promise<string | undefined> {
       'Passing password from command line is considered insecure. ' +
         'Should use environment variable or password file.'
     )
+    logger.warn(
+      'Option `--pass` is deprecated and will be removed in the future.'
+    )
     return pass
   }
 
