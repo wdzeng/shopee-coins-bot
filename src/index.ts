@@ -34,7 +34,7 @@ program
 const args = program.parse(process.argv).opts()
 
 if (program.args.length) {
-  logger.error('Unknown option: ' + program.args[0])
+  logger.error('Unknown option: %s', program.args[0])
   process.exit(ExitCode.INVALID_OPTIONS)
 }
 
@@ -64,8 +64,8 @@ async function getPassword(): Promise<string | undefined> {
   pass = args.pass
   if (pass) {
     logger.warn(
-      'Passing password from command line is considered insecure. ' +
-        'Should use environment variable or password file.'
+      'Passing password from command line is considered insecure.',
+      'Should use environment variable or password file.'
     )
     logger.warn(
       'Option `--pass` is deprecated and will be removed in the future.'
@@ -77,22 +77,22 @@ async function getPassword(): Promise<string | undefined> {
   let passPath: string | undefined = process.env['PATH_PASS'] || args.pathToPass
   if (passPath) {
     passPath = path.resolve(passPath)
-    logger.debug('Try to read password: ' + passPath)
+    logger.debug('Try to read password: %s', passPath)
     try {
       let pass = await fs.readFile(passPath, 'utf-8')
       // Get the first line of password file
       const passwordLines = pass.split('\n')
       if (passwordLines.length > 1) {
         logger.warn(
-          'Read more than one lines from password file. ' +
-            'Only the first line is considered password.'
+          'Read more than one lines from password file.',
+          'Only the first line is considered password.'
         )
       }
       pass = passwordLines[0]
       logger.debug('Password read from file.')
       return pass
     } catch (e: unknown) {
-      logger.error('Failed to read password from file: ' + passPath)
+      logger.error('Failed to read password from file: %s', passPath)
       throw e
     }
   }
@@ -106,10 +106,8 @@ function getCookies(): string | undefined {
 }
 
 async function main() {
-  logger.info('Start shopee coins bot v' + version + '.')
-
-  logger.debug('dump arguments')
-  logger.debug(JSON.stringify(args))
+  logger.info('Start shopee coins bot v%s.', version)
+  logger.debug('Dump arguments:\n%s', JSON.stringify(args))
 
   const username: string | undefined = getUsername()
   const password: string | undefined = await getPassword()
@@ -121,8 +119,8 @@ async function main() {
 
   if (ignorePassword) {
     logger.warn(
-      'Option `--ignore-password` is deprecated and will be removed ' +
-        'in the future.'
+      'Option `--ignore-password` is deprecated',
+      'and will be removed in the future.'
     )
   }
 
@@ -139,20 +137,20 @@ async function main() {
     // logger.error('Login failed: wrong password.')
     // process.exit(EXIT_CODE_WRONG_PASSWORD)
     logger.warn(
-      'Password length does not meet the requirement (length 8-16). ' +
-        'Was this password set long time ago?'
+      'Password length does not meet the requirement (length 8-16).',
+      'Was this password set long time ago?'
     )
     logger.warn(
-      'I will let you go. Please refer to this issue: ' +
-        'https://github.com/wdzeng/shopee-coins-bot/issues/4'
+      'I will let you go. Please refer to this issue:',
+      'https://github.com/wdzeng/shopee-coins-bot/issues/4'
     )
   }
 
   // Warn if using screenshot in kelly image
   if (process.env['IMAGE_VARIANT'] === 'kelly' && screenshot) {
     logger.warn(
-      'You are using kelly image. ' +
-        'You may not see CJK characters in screenshots.'
+      'You are using kelly image.',
+      'You may not see CJK characters in screenshots.'
     )
   }
 

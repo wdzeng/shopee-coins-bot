@@ -48,7 +48,7 @@ export default class TaiwanShopeeBot {
     await this.driver.get(urlLogin)
     await new Promise(res => setTimeout(res, 4000))
     const curUrl = await this.driver.getCurrentUrl()
-    logger.debug('Currently at url: ' + curUrl)
+    logger.debug('Currently at url: %s', curUrl)
 
     const urlCoin = 'https://shopee.tw/shopee-coins'
     if (curUrl === urlCoin) {
@@ -86,10 +86,7 @@ export default class TaiwanShopeeBot {
     const btnLogin = await this.driver.findElement(
       By.xpath(xpathByText('button', '登入'))
     )
-    await this.driver.wait(
-      until.elementIsEnabled(btnLogin),
-      TIMEOUT_OPERATION
-    )
+    await this.driver.wait(until.elementIsEnabled(btnLogin), TIMEOUT_OPERATION)
     btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
 
@@ -135,7 +132,7 @@ export default class TaiwanShopeeBot {
     }
 
     // unknown error
-    logger.debug(`Unexpected error occurred. Fetched text by xpath: ${text}`)
+    logger.debug('Unexpected error occurred. Fetched text by xpath: %s', text)
     throw new Error('Unknown error occurred when trying to login.')
   }
 
@@ -246,7 +243,9 @@ export default class TaiwanShopeeBot {
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
     logger.warn(
-      'An SMS message is sent to your mobile. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.'
+      'An SMS message is sent to your mobile.',
+      'Once you click the link I will keep going.',
+      'I will wait for you and please complete it in 10 minutes.'
     )
     return await this.waitUntilLoginPermitted()
   }
@@ -273,7 +272,9 @@ export default class TaiwanShopeeBot {
     // Wait for user completing the process; by the time the website should be
     // redirected to coin page.
     logger.warn(
-      'An authentication mail is sent to your inbox. Once you click the link I will keep going. I will wait for you and please complete it in 10 minutes.'
+      'An authentication mail is sent to your inbox.',
+      'Once you click the link I will keep going.',
+      'I will wait for you and please complete it in 10 minutes.'
     )
     return await this.waitUntilLoginPermitted()
   }
@@ -294,7 +295,7 @@ export default class TaiwanShopeeBot {
     } catch (e: unknown) {
       // Suppress error.
       if (e instanceof Error) {
-        logger.warn('Failed to save cookie: ' + e.message)
+        logger.warn('Failed to save cookie: %s', e.message)
       } else {
         logger.warn('Failed to save cookie.')
       }
@@ -338,7 +339,7 @@ export default class TaiwanShopeeBot {
       // Cannot load cookies; ignore. This may be due to invalid cookie string
       // pattern.
       if (e instanceof Error) {
-        logger.error('Failed to load cookies: ' + e.message)
+        logger.error('Failed to load cookies: %s', e.message)
       } else {
         logger.error('Failed to load cookies.')
       }
@@ -375,7 +376,8 @@ export default class TaiwanShopeeBot {
       await this.loadCookies(ignorePassword)
     } else {
       logger.info(
-        'No cookies given. Will try to login using username and password.'
+        'No cookies given.',
+        'Will try to login using username and password.'
       )
     }
 
@@ -425,10 +427,10 @@ export default class TaiwanShopeeBot {
     const filename = path.resolve(screenshotPath, 'screenshot.png')
     try {
       await fs.writeFile(filename, png, 'base64')
-      logger.error(`A screenshot has been put at ${filename}.`)
+      logger.error('A screenshot has been put at %s.', filename)
     } catch (e: unknown) {
       if (e instanceof Error) {
-        logger.error('Failed to save screenshot: ' + e.message)
+        logger.error('Failed to save screenshot: %s', e.message)
       } else {
         logger.error('Failed to save screenshot.')
       }
@@ -464,7 +466,7 @@ export default class TaiwanShopeeBot {
       }
 
       if (e instanceof Error) {
-        logger.error('Unexpected error: ' + e.message)
+        logger.error('Unexpected error: %s', e.message)
       } else {
         logger.error('Unexpected error occurred.')
         logger.debug(e)
