@@ -8,13 +8,15 @@ import {
   error,
   IWebDriverOptionsCookie,
   until,
-  WebDriver,
+  WebDriver
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
-import * as Config from './config'
-import * as ExitCode from './exit-code'
+import { ExitCode } from './exit-code'
 import * as Text from './text'
 import { xpathByText } from './util'
+
+const TIMEOUT_AUTH = 10 * 60 * 1000 // 10 min
+const TIMEOUT_OPERATION = 2 * 60 * 1000 // 2 min
 
 interface ShopeeCredential {
   username: string | undefined
@@ -86,7 +88,7 @@ export default class TaiwanShopeeBot {
     )
     await this.driver.wait(
       until.elementIsEnabled(btnLogin),
-      Config.TIMEOUT_OPERATION
+      TIMEOUT_OPERATION
     )
     btnLogin.click() // do not await for this click since it may hang = =
     logger.info('Login form submitted. Waiting for redirect.')
@@ -102,7 +104,7 @@ export default class TaiwanShopeeBot {
     ].join('|')
     const result = await this.driver.wait(
       until.elementLocated(By.xpath(xpath)),
-      Config.TIMEOUT_OPERATION
+      TIMEOUT_OPERATION
     )
     const text = await result.getText()
 
@@ -144,7 +146,7 @@ export default class TaiwanShopeeBot {
     )}`
     await this.driver.wait(
       until.elementLocated(By.xpath(xpath)),
-      Config.TIMEOUT_OPERATION
+      TIMEOUT_OPERATION
     )
     const btnReceiveCoin = await this.driver.findElement(By.xpath(xpath))
 
@@ -172,7 +174,7 @@ export default class TaiwanShopeeBot {
         this.driver
           .wait(
             until.urlMatches(/^https:\/\/shopee.tw\/shopee-coins(\?.*)?$/),
-            Config.TIMEOUT_AUTH
+            TIMEOUT_AUTH
           )
           .then(() => res('success'))
           .catch(rej)
@@ -181,7 +183,7 @@ export default class TaiwanShopeeBot {
         this.driver
           .wait(
             until.elementLocated(By.xpath(xpathByText('div', Text.FAILURE))),
-            Config.TIMEOUT_AUTH
+            TIMEOUT_AUTH
           )
           .then(() => res('foul'))
           .catch(rej)
@@ -218,7 +220,7 @@ export default class TaiwanShopeeBot {
     // Wait until the '使用連結驗證' button is available.
     await this.driver.wait(
       until.elementLocated(By.xpath(xpathByText('div', Text.USE_LINK))),
-      Config.TIMEOUT_OPERATION
+      TIMEOUT_OPERATION
     )
 
     // Click the '使用連結驗證' button.
@@ -253,7 +255,7 @@ export default class TaiwanShopeeBot {
     // Wait until the '透過電子郵件連結驗證' button is available.
     await this.driver.wait(
       until.elementLocated(By.xpath(xpathByText('div', Text.USE_EMAIL_LINK))),
-      Config.TIMEOUT_OPERATION
+      TIMEOUT_OPERATION
     )
 
     // Click the '透過電子郵件連結驗證' button.

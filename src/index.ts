@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { program } from 'commander'
 import logger from 'loglevel'
-import * as ExitCode from './exit-code'
+import { ExitCode } from './exit-code'
 import Bot from './tw-shopee-bot'
 import { isValidPassword, version } from './util'
 
