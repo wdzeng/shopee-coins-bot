@@ -54,10 +54,10 @@ docker run -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
 所有參數都是選填。
 
 - `-u`, `--user <STRING>`: 蝦皮帳號；可以是手機、電子信箱或蝦皮 ID
-- `-p`, `--pass <STRING>`: 蝦皮密碼
+- ~~`-p`, `--pass <STRING>`: 蝦皮密碼~~ **DEPRECATED**
 - `-P`, `--path-to-pass <FILE>`: 密碼檔案
 - `-c`, `--cookie <FILE>`: cookie 檔案
-- ~~`-i`, `--ignore-password`: 不要儲存密碼~~ **Deprecated**
+- ~~`-i`, `--ignore-password`: 不要儲存密碼~~ **DEPRECATED**
 - `-x`, `--no-sms`: 如果觸發簡訊驗證，直接令程式以失敗結束；預設為 `false`
 - `-y`, `--no-email`: 如果觸發電子郵件驗證，直接令程式以失敗結束；預設為 `false`
 - `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
@@ -90,7 +90,7 @@ Cookie 檔案的位置以下列優先順序決定。
 密碼以下列優先順序決定。
 
 1. 環境變數 `PASSWORD`
-2. 程式參數 `--pass`
+2. ~~程式參數 `--pass`~~ **DEPRECATED**
 3. 環境變數 `PATH_PASS`
 4. 程式參數 `--path-to-pass`
 
