@@ -9,5 +9,5 @@ export enum ExitCode {
   TOO_MUCH_TRY = 69,
   INVALID_OPTIONS = 77,
   WRONG_PASSWORD = 87,
-  UNKNOWN_ERROR = 88,
+  UNKNOWN_ERROR = 88
 }

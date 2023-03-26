@@ -25,8 +25,7 @@ interface ShopeeCredential {
 }
 
 export default class TaiwanShopeeBot {
-  // @ts-ignore
-  private driver: WebDriver
+  private driver!: WebDriver
 
   constructor(
     private username: string | undefined,
