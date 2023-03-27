@@ -1,15 +1,10 @@
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.209.3/containers/ubuntu/.devcontainer/base.Dockerfile
+FROM mcr.microsoft.com/devcontainers/typescript-node:0-18
 
-# [Choice] Ubuntu version (use hirsuite or bionic on local arm64/Apple Silicon): hirsute, focal, bionic
-ARG VARIANT="hirsute"
-FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
-
-# [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends unzip
 
-# Install google chrome
 ARG CHROME_VERSION="98.0.4758.102"
+# Install google chrome
 RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb \
     && apt-get install -yqq /tmp/chrome.deb \
     && rm /tmp/chrome.deb
