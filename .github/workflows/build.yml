@@ -5,20 +5,43 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       - src/**
+  pull_request:
+    branches:
+      - main
+      - dev
+  schedule:
+    - cron: '0 22 * * 1'  # 06:00 AM +08:00 every Monday
 
 jobs:
-  build:
-    name: Build and push image onto dockerhub and ghcr
+  unittest:
+    name: Run unittests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install pnpm and dependencies
-        uses: pnpm/action-setup@v2.2.2
+        uses: pnpm/action-setup@v2
         with:
           run_install: true
+      - name: Run unittests
+        run: pnpm test
+
+  build:
+    name: Build and push image onto dockerhub and ghcr
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+    needs:
+      - unittest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+      - name: Install dependencies
+        run: pnpm install --prod
       - name: Build project
         run: pnpm build
       - name: Build kelly image
