@@ -414,14 +414,7 @@ export default class TaiwanShopeeBot {
     return await this.tryReceiveCoin()
   }
 
-  private async takeScreenshot(
-    screenshotPath: string | undefined
-  ): Promise<void> {
-    if (screenshotPath === undefined) {
-      // If path is not specified, do nothing.
-      return
-    }
-
+  private async takeScreenshot(screenshotPath: string): Promise<void> {
     const png = await this.driver.takeScreenshot()
     const filename = path.resolve(screenshotPath, 'screenshot.png')
     try {
@@ -452,12 +445,16 @@ export default class TaiwanShopeeBot {
       )
       if (exitCode !== 0) {
         // If not succeeded then take a screenshot.
-        await this.takeScreenshot(screenshotPath)
+        if (screenshotPath) {
+          await this.takeScreenshot(screenshotPath)
+        }
       }
       return exitCode
     } catch (e: unknown) {
       // If not succeeded then take a screenshot.
-      await this.takeScreenshot(screenshotPath)
+      if (screenshotPath) {
+        await this.takeScreenshot(screenshotPath)
+      }
 
       if (e instanceof error.TimeoutError) {
         logger.error('Operation timeout exceeded.')
