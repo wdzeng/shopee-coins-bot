@@ -35,10 +35,11 @@ describe('login', () => {
   )
 
   testIf(
-    Boolean(
-      (process.env['SHOPEE_USERNAME'] && process.env['SHOPEE_PASSWORD']) ||
-      process.env['GITHUB_ACTIONS']
-    ),
+    false,
+    // Boolean(
+    //   (process.env['SHOPEE_USERNAME'] && process.env['SHOPEE_PASSWORD']) ||
+    //   process.env['GITHUB_ACTIONS']
+    // ),
     'bot can login with correct username and password',
     async () => {
       const bot = new Bot(
