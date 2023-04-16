@@ -1,5 +1,6 @@
 // Test bot operations
 
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import { describe, expect, test } from '@jest/globals'
 import { isPng, testIf } from './utils'
@@ -8,9 +9,20 @@ import Bot from '../tw-shopee-bot'
 
 const TIMEOUT_LOGIN = 20 * 1000 // 20s
 
+function generateRandomString() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz';
+  let result = '';
+  const randomBytes = crypto.randomBytes(10);
+  for (let i = 0; i < 10; i++) {
+    const index = randomBytes[i] % chars.length;
+    result += chars[index];
+  }
+  return result;
+}
+
 async function testLoginWithDummyUserInfo(screenshotPath: undefined | string) {
-  const dummyUsername = 'dummyusername' // cspell:disable-line
-  const dummyPassword = 'dummypassword' // cspell:disable-line
+  const dummyUsername = generateRandomString()
+  const dummyPassword = generateRandomString()
   const bot = new Bot(dummyUsername, dummyPassword, undefined)
   const exitCode = await bot.run(true, true, false, screenshotPath)
   expect(exitCode).toBe(ExitCode.WRONG_PASSWORD)
