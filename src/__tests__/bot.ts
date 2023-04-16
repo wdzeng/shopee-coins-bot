@@ -61,6 +61,7 @@ describe('screenshot', () => {
     'bot can save a screenshot',
     async () => {
       const screenshotPath = '/tmp/screenshot.png'
+      fs.unlinkSync(screenshotPath)
       expect(fs.existsSync(screenshotPath)).toBe(false)
       await testLoginWithDummyUserInfo('/tmp')
       expect(isPng(screenshotPath)).toBe(true)
