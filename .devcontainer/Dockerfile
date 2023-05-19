@@ -13,6 +13,7 @@ RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/
 RUN wget -qO /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/${CHROME_VERSION}/chromedriver_linux64.zip \
     && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip
+RUN sed -i s/cdc_/fan_/g /usr/local/bin/chromedriver
 # Set display port to avoid crash
 ENV DISPLAY=:99
 ENV PATH /usr/local/bin:$PATH
