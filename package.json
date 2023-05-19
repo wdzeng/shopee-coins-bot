@@ -8,7 +8,7 @@
     "test": "jest"
   },
   "author": "hyperbola",
-  "packageManager": "pnpm@7.29.3",
+  "packageManager": "pnpm@8.5.1",
   "dependencies": {
     "@types/node": "^18.15.3",
     "@types/selenium-webdriver": "^4.1.14",
