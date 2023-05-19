@@ -5,10 +5,10 @@ import {
   Browser,
   Builder,
   By,
+  ChromiumWebDriver,
   error,
   IWebDriverOptionsCookie,
-  until,
-  WebDriver
+  until
 } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome'
 import { ExitCode } from './exit-code'
@@ -25,7 +25,7 @@ interface ShopeeCredential {
 }
 
 export default class TaiwanShopeeBot {
-  private driver!: WebDriver
+  private driver!: ChromiumWebDriver
 
   constructor(
     private username: string | undefined,
@@ -355,15 +355,31 @@ export default class TaiwanShopeeBot {
       .addArguments('--disable-dev-shm-usage')
       .addArguments('--disable-gpu')
       .addArguments('--lang=zh-TW')
+      // Shopee server now detects if the bot is running in headless mode.
+      .addArguments(
+        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
+      )
+      .addArguments('--disable-blink-features')
+      .addArguments('--disable-blink-features=AutomationControlled')
+      .excludeSwitches('enable-automation')
+      .excludeSwitches('useAutomationExtension')
+
     if (process.env['DEBUG']) {
       logger.debug('Open debug port on 9222.')
       options.addArguments('--remote-debugging-port=9222')
     }
 
-    this.driver = await new Builder()
+    this.driver = (await new Builder()
       .forBrowser(Browser.CHROME)
       .setChromeOptions(options)
-      .build()
+      .build()) as ChromiumWebDriver
+
+    await this.driver.sendDevToolsCommand(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source: `Object.defineProperty(navigator, 'webdriver', { get: () => undefined }) `
+      }
+    )
   }
 
   private async runBot(
