@@ -1,8 +1,9 @@
 # 蝦皮簽到機器人
 
 [![release](https://badgen.net/github/release/wdzeng/shopee-coins-bot/stable?color=red)](https://github.com/wdzeng/shopee-coins-bot/releases/latest)
-[![github](https://badgen.net/badge/icon/github/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot)
+[![unittests](https://img.shields.io/github/actions/workflow/status/wdzeng/shopee-coins-bot/unittests.yml?branch=main&label=unittests)](https://github.com/wdzeng/shopee-coins-bot/actions/workflows/unittests.yml)
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
+[![ghcr](https://badgen.net/badge/icon/ghcr/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
