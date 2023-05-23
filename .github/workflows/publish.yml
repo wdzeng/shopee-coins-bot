@@ -1,39 +1,21 @@
-name: Build
+name: Publish
 
 on:
   workflow_dispatch: ~
   push:
     branches:
       - main
-      - dev
     paths:
       - src/**
-  pull_request:
-    branches:
-      - main
-      - dev
-  schedule:
-    - cron: '0 22 * * 1'  # 06:00 AM +08:00 every Monday
 
 jobs:
-  unittest:
-    name: Run unittests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install pnpm and dependencies
-        uses: pnpm/action-setup@v2
-        with:
-          run_install: true
-      - name: Run unittests
-        run: pnpm test
+  unittests:
+    uses: ./.github/workflows/unittests.yaml
 
   build:
-    name: Build and push image onto dockerhub and ghcr
-    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+    name: Build project and push image to dockerhub and ghcr
     needs:
-      - unittest
+      - unittests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
