@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
     "eslint-config-google": "^0.14.0",
