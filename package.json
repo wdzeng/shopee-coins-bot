@@ -10,7 +10,7 @@
   "author": "hyperbola",
   "packageManager": "pnpm@8.5.1",
   "dependencies": {
-    "@types/node": "^18.15.3",
+    "@types/node": "^20.3.3",
     "@types/selenium-webdriver": "^4.1.14",
     "@vercel/ncc": "^0.36.1",
     "commander": "^10.0.1",
