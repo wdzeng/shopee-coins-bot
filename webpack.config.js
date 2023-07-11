@@ -3,9 +3,14 @@ import path from 'node:path'
 import url from 'node:url'
 
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import webpack from 'webpack'
 
 const projectRootPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)))
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(projectRootPath, 'package.json')))
+const version = packageJson.version
 const outputDir = path.resolve(projectRootPath, 'dist')
+
+const versionPlugin = new webpack.DefinePlugin({ 'process.env.VERSION': JSON.stringify(version) })
 
 export default {
   mode: 'production',
@@ -32,5 +37,6 @@ export default {
   experiments: {
     topLevelAwait: true
   },
-  externals: ['utf-8-validate', 'bufferutil']
+  externals: ['utf-8-validate', 'bufferutil'],
+  plugins: [versionPlugin]
 }
