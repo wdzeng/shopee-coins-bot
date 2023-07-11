@@ -20,4 +20,4 @@ COPY dist/index.cjs /app/index.js
 ENV TZ=Asia/Taipei
 ENV IMAGE_VARIANT=${VARIANT}
 WORKDIR /app
-ENTRYPOINT [ "tini", "--", "node", "index.js" ]
+ENTRYPOINT [ "/sbin/tini", "--", "node", "index.js" ]
