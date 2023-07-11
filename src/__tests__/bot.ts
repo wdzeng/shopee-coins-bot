@@ -2,22 +2,25 @@
 
 import crypto from 'node:crypto'
 import fs from 'node:fs'
+
 import { describe, expect, test } from '@jest/globals'
-import { isPng, testIf } from './utils'
-import { ExitCode } from '../exit-code'
-import Bot from '../tw-shopee-bot'
+
+import { isPng, testIf } from '@/__tests__/utils'
+import { ExitCode } from '@/exit-code'
+import Bot from '@/tw-shopee-bot'
 
 const TIMEOUT_LOGIN = 20 * 1000 // 20s
 
 function generateRandomString() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  const randomBytes = crypto.randomBytes(10);
+  const chars = 'abcdefghijklmnopqrstuvwxyz'
+  let result = ''
+  const randomBytes = crypto.randomBytes(10)
   for (let i = 0; i < 10; i++) {
-    const index = randomBytes[i] % chars.length;
-    result += chars[index];
+    // @ts-expect-error: randomBytes is a Buffer
+    const index = randomBytes[i] % chars.length
+    result += chars[index]
   }
-  return result;
+  return result
 }
 
 async function testLoginWithDummyUserInfo(screenshotPath: undefined | string) {
@@ -54,15 +57,9 @@ describe('login', () => {
     // ),
     'bot can login with correct username and password',
     async () => {
-      const bot = new Bot(
-        process.env['SHOPEE_USERNAME'],
-        process.env['SHOPEE_PASSWORD'],
-        undefined
-      )
+      const bot = new Bot(process.env.SHOPEE_USERNAME, process.env.SHOPEE_PASSWORD, undefined)
       const exitCode = await bot.run(true, true, false, undefined)
-      expect([ExitCode.NEED_SMS_AUTH, ExitCode.NEED_EMAIL_AUTH]).toContain(
-        exitCode
-      )
+      expect([ExitCode.NEED_SMS_AUTH, ExitCode.NEED_EMAIL_AUTH]).toContain(exitCode)
     },
     TIMEOUT_LOGIN
   )

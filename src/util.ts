@@ -1,6 +1,5 @@
 export function xpathByText(tag: string, text: string): string {
   // There should be no text contains quotes.
-  // text = text.replace(/"/g, '\\"')
   return `//${tag}[contains(text(), "${text}")]`
 }
 

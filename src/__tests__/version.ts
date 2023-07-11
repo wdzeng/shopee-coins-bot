@@ -2,13 +2,18 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { describe, test, expect } from '@jest/globals'
-import { version } from '../util'
+import url from 'node:url'
+
+import { describe, expect, test } from '@jest/globals'
+
+import { version } from '@/util'
 
 describe('version', () => {
   test('program version matches package.json', () => {
-    const packageJsonPath = path.join(__dirname, '../../package.json')
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+    const dirname = path.dirname(url.fileURLToPath(import.meta.url))
+    const packageJsonPath = path.join(dirname, '../../package.json')
+    // @ts-expect-error: Parse a buffer to JSON object is OK.
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
     const programVersion = version
     expect(programVersion).toBe(packageJson.version)
   })

@@ -16,7 +16,7 @@ RUN apk add --no-cache font-noto-cjk
 FROM ${BASE_IMAGE}
 ARG VARIANT
 USER bot
-COPY dist /app
+COPY dist/index.cjs /app/index.js
 ENV TZ=Asia/Taipei
 ENV IMAGE_VARIANT=${VARIANT}
 WORKDIR /app
