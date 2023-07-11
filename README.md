@@ -7,17 +7,23 @@
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
-這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。其他國家沒試過。
+這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使
+用者。其他國家沒試過。
 
 ## 使用方式
 
 這支程式需要用到 [docker](https://www.docker.com/) 或 [podman](https://podman.io/)。
 
-機器人已經包成容器，映像位於 Docker Hub [`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot) 以及 GitHub Container Registry [`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。支援 amd64 以及 arm64（含樹梅派 4）。
+機器人已經包成容器，映像位於 Docker Hub
+[`hyperbola/shopee-coins-bot`](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
+以及 GitHub Container Registry
+[`ghcr.io/wdzeng/shopee-coins-bot`](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)。
+支援 amd64 以及 arm64（含樹梅派 4）。
 
 ### Tags
 
-以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container Registry 頁面。
+以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container
+Registry 頁面。
 
 - `latest`, `1`, `1.3`, `1.3.1`
 
@@ -31,7 +37,9 @@ docker run hyperbola/shopee-coins-bot:1 --help
 
 ### 帳號密碼登入
 
-第一次使用時，需要提供蝦皮帳號密碼，並且強烈建議設定機器人登入後儲存 cookie 的位置，以備未來機器人能夠執行自動登入。如果你不指定一個 cookie 的位置，那未來每次登入都會需要帳號與密碼。
+第一次使用時，需要提供蝦皮帳號密碼，並且強烈建議設定機器人登入後儲存 cookie 的位
+置，以備未來機器人能夠執行自動登入。如果你不指定一個 cookie 的位置，那未來每次登
+入都會需要帳號與密碼。
 
 ```sh
 docker run -v /path/to/somewhere:/cookie \
@@ -40,7 +48,9 @@ docker run -v /path/to/somewhere:/cookie \
 
 > **Warning**
 >
-> 機器人進行登入期間，你可能會收到來自 shopee 的 Email 或手機驗證簡訊，其中會有一個驗證登入的連結。請在 10 分鐘內進行驗證，在這期間機器人會等你。一旦你點了驗證簡訊後，機器人會立即繼續執行下去。
+> 機器人進行登入期間，你可能會收到來自 shopee 的 Email 或手機驗證簡訊，其中會有
+> 一個驗證登入的連結。請在 10 分鐘內進行驗證，在這期間機器人會等你。一旦你點了驗
+> 證簡訊後，機器人會立即繼續執行下去。
 
 ### 自動登入
 
@@ -63,7 +73,8 @@ docker run -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
 - `-y`, `--no-email`: 如果觸發電子郵件驗證，直接令程式以失敗結束；預設為 `false`
 - `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
 - `-q`, `--quiet`: 不要印出訊息；但仍會印出警告與錯誤訊息
-- `-s`, `--screenshot <DIR>`: 簽到失敗時將螢幕截圖的儲存於指定資料夾下（圖檔檔名為 screenshot.png）
+- `-s`, `--screenshot <DIR>`: 簽到失敗時將螢幕截圖的儲存於指定資料夾下（圖檔檔名
+  為 screenshot.png）
 - `-V`, `--version`: 印出版本
 - `-h`, `--help`: 印出參數說明
 
@@ -102,7 +113,7 @@ Cookie 檔案的位置以下列優先順序決定。
 | 0         | 簽到成功。    |
 | 1         | 今日已簽到。如果傳了 `--force` 參數，那就會改為回傳 0。 |
 | 2         | 需要簡訊驗證，但你傳了 `--no-sms` 參數。 |
-| 3         | 機器人遇到拼圖遊戲，但是它不會玩🥺🥺<br> 這通常是因為嘗試登入次數太多，被網站 ban 掉。 |
+| 3         | 機器人遇到拼圖遊戲，但是它不會玩🥺🥺 這通常是因為嘗試登入次數太多，被網站 ban 掉。 |
 | 4         | 操作逾時。 |
 | ~~5~~     | ~~觸發電子郵件驗證。機器人尚不支援。~~ **DEPRECATED** |
 | 6         | 使用者進行簡訊驗證時選擇拒絕機器人登入。 |
