@@ -32,7 +32,7 @@ jobs:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
           variant: kelly
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             BASE_IMAGE=alpine-base
             VARIANT=kelly
@@ -44,7 +44,7 @@ jobs:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
           init: false
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             BASE_IMAGE=alpine-font
             VARIANT=''
