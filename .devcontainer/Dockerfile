@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/devcontainers/typescript-node:0-18
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends unzip
 
-ARG CHROME_VERSION="98.0.4758.102"
+ARG CHROME_VERSION="112.0.5615.49"
 # Install google chrome
 RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb \
     && apt-get install -yqq /tmp/chrome.deb \
