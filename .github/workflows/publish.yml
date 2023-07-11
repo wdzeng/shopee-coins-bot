@@ -10,7 +10,7 @@ on:
 
 jobs:
   unittests:
-    uses: ./.github/workflows/unittests.yaml
+    uses: ./.github/workflows/unittests.yml
 
   build:
     name: Build project and push image to dockerhub and ghcr
