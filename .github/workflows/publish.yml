@@ -9,47 +9,27 @@ on:
       - src/**
 
 jobs:
-  unittests:
-    uses: ./.github/workflows/unittests.yml
-
   build:
-    name: Build project and push image to dockerhub and ghcr
-    needs:
-      - unittests
+    name: Build project and push image to Dockerhub and Github Container Registry
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           run_install: true
       - name: Build project
         run: pnpm build
-      - name: Build kelly image
-        uses: wdzeng/image@v2
+      - name: Build image
+        uses: wdzeng/image@v3
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          variant: kelly
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          build-args: |
-            BASE_IMAGE=alpine-base
-            VARIANT=kelly
-          repo-description: Get Shopee coins everyday
-          repo-license: MIT
-      - name: Build regular image
-        uses: wdzeng/image@v2
-        with:
-          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          init: false
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          build-args: |
-            BASE_IMAGE=alpine-font
-            VARIANT=''
-          repo-description: Get Shopee coins everyday
-          repo-license: MIT
 
   tag:
     name: Add tags to repository
