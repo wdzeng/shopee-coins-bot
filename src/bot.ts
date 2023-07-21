@@ -112,8 +112,13 @@ export default class ShopeeBot {
       throw new UserNotLoggedInError()
     }
 
+    if (body.data.checkin_list.length < 7) {
+      throw new Error('Unexpected checkin history length')
+    }
+
     return {
-      amounts: body.data.checkin_list,
+      // @ts-expect-error: length of `checkin_list` is always 7
+      amounts: body.data.checkin_list.slice(0, 7),
       checkedInToday: body.data.checked_in_today,
       todayIndex: body.data.today_index - 1
     }

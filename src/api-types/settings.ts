@@ -12,7 +12,7 @@ interface Data {
   'asset_setting': string
   'checked_in_today': boolean
   'checked_in_today_amount': number
-  'checkin_list': [number, number, number, number, number, number, number]
+  'checkin_list': number[]
   'dataview_type': string
   'deviceid': string
   'devicetype': string
