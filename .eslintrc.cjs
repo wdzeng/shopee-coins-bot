@@ -1,7 +1,7 @@
 /* eslint-env node */
 module.exports = {
   root: true,
-  extends: ['wdzeng', 'wdzeng/typescript', 'plugin:prettier/recommended'],
+  extends: ['wdzeng/typescript'],
   env: {
     browser: false,
     es2022: true,
@@ -9,7 +9,8 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 13,
-    sourceType: 'module'
+    sourceType: 'module',
+    project: './tsconfig.json'
   },
   rules: {
     // Your custom rules go here ...
