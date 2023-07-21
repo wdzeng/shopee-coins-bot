@@ -383,9 +383,9 @@ export default class TaiwanShopeeBot {
       // Login failed. Try use email link to login.
       if (disableEmailLogin) {
         logger.error('Email authentication is required.')
-      } else {
-        result = await this.tryLoginWithEmailLink()
+        return result
       }
+      result = await this.tryLoginWithEmailLink()
     }
 
     if (result !== undefined) {
