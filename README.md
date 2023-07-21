@@ -5,6 +5,10 @@
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
 [![ghcr](https://badgen.net/badge/icon/ghcr/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)
 
+> **Warning**
+>
+> 蝦皮的登入驗證程序不時更新且越來越嚴格，維護登入步驟花費不少時間與力氣。正在實驗的新版 ([v2](https://github.com/wdzeng/shopee-coins-bot/tree/features/v2)) 機器人將不會再支援使用帳號密碼登入，而是改用與 [pinkoi 簽到機器人](https://github.com/wdzeng/pinkoi-coins-bot)同樣的人工給予 cookie 的方式。新版機器人會在九月釋出，屆時當前 (v1) 的機器人將會停止維護。
+
 💰💰 簽到蝦皮領蝦幣 💰💰
 
 這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。其他國家沒試過。
