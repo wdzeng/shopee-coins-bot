@@ -87,7 +87,7 @@ export default class TaiwanShopeeBot {
     const xpath = [
       ...Text.WRONG_PASSWORDS.map((e) => xpathByText('div', e)),
       xpathByText('button', Text.PLAY_PUZZLE),
-      xpathByText('div', Text.USE_LINK),
+      xpathByText('div', Text.USE_SMS),
       xpathByText('div', Text.TOO_MUCH_TRY),
       xpathByText('div', Text.SHOPEE_REWARD),
       xpathByText('div', Text.USE_EMAIL_LINK)
@@ -110,7 +110,7 @@ export default class TaiwanShopeeBot {
       logger.error('Login failed: I cannot solve the puzzle.')
       return ExitCode.CANNOT_SOLVE_PUZZLE
     }
-    if (text === Text.USE_LINK) {
+    if (text === Text.USE_SMS) {
       // Need to authenticate via SMS link.
       logger.warn('Login failed: please login via SMS.')
       return ExitCode.NEED_SMS_AUTH
@@ -195,29 +195,70 @@ export default class TaiwanShopeeBot {
   }
 
   private async tryLoginWithSmsLink(): Promise<number | undefined> {
-    // Wait until the '使用連結驗證' button is available.
+    // Wait until the '使用簡訊驗證' button is available.
     await this.driver.wait(
-      until.elementLocated(By.xpath(xpathByText('div', Text.USE_LINK))),
+      until.elementLocated(By.xpath(xpathByText('div', Text.USE_SMS))),
       TIMEOUT_OPERATION
     )
 
-    // Click the '使用連結驗證' button.
+    // Click the '使用簡訊驗證' button.
     const btnLoginWithLink = await this.driver.findElement(
-      By.xpath(xpathByText('div', Text.USE_LINK))
+      By.xpath(xpathByText('div', Text.USE_SMS))
     )
     await btnLoginWithLink.click()
+    logger.debug('Clicked "使用簡訊驗證" button. Waiting for redirect.')
 
-    // Wait until the page is redirect.
-    await this.driver.wait(until.urlIs('https://shopee.tw/verify/link'))
+    // Wait until the page is redirect. Set timeout to be 8 seconds.
+    await this.driver.wait(until.urlContains('https://shopee.tw/verify/otp'), 8000)
 
-    // Check if reaching daily limits.
-    const reachLimit = await this.driver.findElements(
-      By.xpath(xpathByText('div', Text.TOO_MUCH_TRY))
-    )
-    if (reachLimit.length > 0) {
-      // Failed because reach limits.
-      logger.error('Cannot use SMS link to login: reach daily limits.')
-      return ExitCode.TOO_MUCH_TRY
+    const validatePageLoaded = async (timeout: number) => {
+      const start = Date.now()
+
+      while (Date.now() < start + timeout) {
+        // Check if reaching daily limits.
+        const reachLimit = await this.driver.findElements(
+          By.xpath(xpathByText('div', Text.TOO_MUCH_TRY))
+        )
+        if (reachLimit.length > 0) {
+          // Failed because reach limits.
+          logger.error('Cannot use SMS link to login: reach daily limits.')
+          return ExitCode.TOO_MUCH_TRY
+        }
+
+        // Check if puzzle quiz is required.
+        const requirePuzzleQuiz = await this.driver.findElements(
+          By.xpath(xpathByText('button', Text.PLAY_PUZZLE))
+        )
+        if (requirePuzzleQuiz.length > 0) {
+          logger.error('Login failed: I cannot solve the puzzle.')
+          return ExitCode.CANNOT_SOLVE_PUZZLE
+        }
+
+        // Check if Shopee website reports any error.
+        const errorTryAgain = await this.driver.findElements(
+          By.xpath(xpathByText('div', Text.ERROR_TRY_AGAIN))
+        )
+        if (errorTryAgain.length > 0) {
+          logger.error('Failed to login with SMS authentication.')
+          return ExitCode.SHOPEE_ERROR
+        }
+
+        // Check if SMS is sent out.
+        const smsSent = await this.driver.findElements(By.xpath(xpathByText('div', Text.SMS_SENT)))
+        if (smsSent.length > 0) {
+          return true
+        }
+      }
+
+      // Unexpected error.
+      logger.error('Redirect timeout exceeds.')
+      return ExitCode.OPERATION_TIMEOUT_EXCEEDED
+    }
+
+    // Wait for page loaded. 10s should be enough.
+    const result = await validatePageLoaded(10 * 1000)
+    if (result !== true) {
+      return result
     }
 
     // Now user should click the link sent from Shopee to her mobile via SMS.
