@@ -98,6 +98,14 @@ program
     cookie = readCookieFromFile(cookieOption)
   })
 
+// Disallow any unused argument.
+program.hook('preAction', (_thisCommand, actionCommand) => {
+  if (actionCommand.args.length > 0) {
+    logger.error(`Unknown option: ${actionCommand.args[0]}`)
+    process.exit(ExitCode.INVALID_OPTIONS)
+  }
+})
+
 program
   .command('checkin')
   .description('Checkin to get Shopee coins')
