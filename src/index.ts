@@ -172,19 +172,20 @@ program
       process.exit(0)
     }
 
-    let outputResult = ''
+    const outputLines = []
     for (let i = 0; i < 7; i++) {
+      let outputLine = ''
       const checkedIn =
         i < history.todayIndex || (i === history.todayIndex && history.checkedInToday)
-      outputResult += checkedIn ? '✅' : '⬜'
-      outputResult += ' '
-      outputResult += history.amounts[i]?.toFixed(2)
+      outputLine += checkedIn ? '✅' : '⬜'
+      outputLine += ' '
+      outputLine += history.amounts[i]?.toFixed(2)
       if (i === history.todayIndex) {
-        outputResult += ' <'
+        outputLine += ' <'
       }
-      outputResult += '\n'
+      outputLines.push(outputLine)
     }
-    console.log(outputResult)
+    console.log(outputLines.join('\n'))
   })
 
 program
