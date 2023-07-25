@@ -78,6 +78,9 @@ docker run hyperbola/shopee-coins-bot:edge --help
 docker run -v "$HOME/.config/shopee:/config" hyperbola/shopee-coins-bot:edge -c /config/cookie whoami
 ```
 
+為了讀取 cookie，所有的指令都會需要搭配 `-v <MOUNT_POINT>` 和
+`-c <FILE>`。為求精簡，以下所有範例中的指令將不列出 `-v` 和 `-c`。
+
 ## 簽到
 
 使用 `checkin` 指令進行簽到。
