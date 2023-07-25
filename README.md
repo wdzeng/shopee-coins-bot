@@ -124,7 +124,7 @@ $ docker run hyperbola/shopee-coins-bot:edge history
 如果你想分析 output，可以用 `--output json`，這樣印出的結果比較好分析。
 
 ```sh
-$ docker run hyperbola/shopee-coins-bot:edge history
+$ docker run hyperbola/shopee-coins-bot:edge history --output json
 {"amounts":[0.05,0.1,0.15,0.2,0.25,0.25,0.5],"checkedInToday":true,"todayIndex":2}
 ```
 
@@ -140,7 +140,7 @@ $ docker run hyperbola/shopee-coins-bot:edge history
 
 - `.amounts` (`number[]`): 含有七個數字的陣列，分別表示七天來每天可領的蝦幣數量。
 - `.checkedInToday` (`boolean`): 今天是否已經簽到。
-- `todayIndex` (`number`): 今天是七天中的第幾天；此值為 0-based，亦即 `0` 表第一天、`1`
+- `.todayIndex` (`number`): 今天是七天中的第幾天；此值為 0-based，亦即 `0` 表第一天、`1`
   表第二天、依此類推。
 
 ## 姊妹機器人
