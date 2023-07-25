@@ -149,7 +149,7 @@ program
     } catch (e: unknown) {
       handleError(e)
     }
-    console.log(balance)
+    console.log('%d', balance)
   })
 
 program
