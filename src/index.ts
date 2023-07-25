@@ -3,11 +3,11 @@
 import fs from 'node:fs'
 
 import { Option, program } from 'commander'
-import logger from 'loglevel'
 
 import ShopeeBot, { type CheckinHistory } from '@/bot'
 import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/errors'
 import ExitCode from '@/exit-code'
+import * as logger from '@/log'
 
 function handleError(e: unknown): never {
   if (e instanceof InvalidCookieError) {
@@ -27,8 +27,8 @@ function handleError(e: unknown): never {
   }
 
   // Unexpected error.
-  if (e instanceof Error) {
-    logger.debug(e.stack)
+  if (e instanceof Error && e.stack) {
+    logger.debug('%s', e.stack)
   }
   const errMsg: unknown = e instanceof Error ? e.message : e
   logger.error('Unexpected error: %s', typeof errMsg === 'string' ? errMsg : JSON.stringify(errMsg))
@@ -64,6 +64,7 @@ function readCookieFromFile(path: string): string {
   return cookie
 }
 
+// Version number will be replaced by webpack during build.
 const version: string = process.env.VERSION ?? 'Development'
 program
   .name(`docker run hyperbola/shopee-coins-bot:${version}`)
@@ -76,16 +77,7 @@ program
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const quietOption = thisCommand.opts().quiet
     if (quietOption) {
-      if (process.env.DEBUG) {
-        logger.setDefaultLevel('debug')
-        logger.warn('Option `--quiet` is ignored in debug mode.')
-      } else {
-        logger.setDefaultLevel('warn')
-      }
-    } else if (process.env.DEBUG) {
-      logger.setDefaultLevel('debug')
-    } else {
-      logger.setDefaultLevel('info')
+      process.env.QUIET = '1'
     }
   })
 
