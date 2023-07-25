@@ -5,9 +5,12 @@
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
 [![ghcr](https://badgen.net/badge/icon/ghcr/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)
 
-> **Warning**
->
-> 蝦皮的登入驗證程序不時更新且越來越嚴格，維護登入步驟花費不少時間與力氣。正在實驗的新版 ([v2](https://github.com/wdzeng/shopee-coins-bot/tree/features/v2)) 機器人將不會再支援使用帳號密碼登入，而是改用與 [pinkoi 簽到機器人](https://github.com/wdzeng/pinkoi-coins-bot)同樣的人工給予 cookie 的方式。新版機器人會在九月釋出，屆時當前 (v1) 的機器人將會停止維護。
+> [!IMPORTANT]  
+> 蝦皮的登入驗證程序不時更新且越來越嚴格，維護登入步驟花費不少時間與力氣。正在實驗的新版
+> ([v2](https://github.com/wdzeng/shopee-coins-bot/tree/features/v2))
+> 機器人將不會再支援使用帳號密碼登入，而是改用與
+> [pinkoi 簽到機器人](https://github.com/wdzeng/pinkoi-coins-bot)同樣的人工給予 cookie
+> 的方式。新版機器人會在九月釋出，屆時當前 (v1) 的機器人將會停止維護。
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
@@ -47,9 +50,9 @@ docker run -v /path/to/somewhere:/cookie \
     hyperbola/shopee-coins-bot:1 -u username -p password -c /cookie
 ```
 
-> **Warning**
->
-> 機器人進行登入期間，你可能會收到來自 shopee 的 Email 或手機驗證簡訊，其中會有一個驗證登入的連結。請在 10
+> [!IMPORTANT]  
+> 機器人進行登入期間，你可能會收到來自 shopee 的 Email
+> 或手機驗證簡訊，其中會有一個驗證登入的連結。請在 10
 > 分鐘內進行驗證，在這期間機器人會等你。一旦你點了驗證簡訊後，機器人會立即繼續執行下去。
 
 ### 自動登入
@@ -85,8 +88,7 @@ docker run -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
 
 每次登入成功時，機器人就會將 cookie 更新至最新狀態。
 
-> **Warning**
->
+> [!IMPORTANT]  
 > Cookie 是機密資料，請妥善保存。
 
 Cookie 檔案的位置以下列優先順序決定。
