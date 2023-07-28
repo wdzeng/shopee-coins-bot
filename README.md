@@ -7,7 +7,8 @@
 
 > [!IMPORTANT]  
 > 蝦皮簽到機器人 v2 還在實驗中，預計九月釋出。目前仍在使用的 v1
-> 請至[這裡](https://github.com/wdzeng/shopee-coins-bot/tree/main)。
+> 請至[這裡](https://github.com/wdzeng/shopee-coins-bot/tree/main)。如果你使用 v2
+> 機器人遇到任何問題，歡迎到 [Issues](https://github.com/wdzeng/shopee-coins-bot/issues) 回報！
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
