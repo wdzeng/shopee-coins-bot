@@ -4,11 +4,11 @@ import fs from 'node:fs'
 
 import { Option, program } from 'commander'
 
-import ShopeeBot, { type CheckinHistory } from '@/bot'
-import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/errors'
-import ExitCode from '@/exit-code'
-import * as logger from '@/log'
-import { version } from '@/utils/version'
+import ShopeeBot, { type CheckinHistory } from '@/api'
+import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/api/errors'
+import ExitCode from '@/cli/exit-code'
+import * as logger from '@/cli/log'
+import { version } from '@/cli/version'
 
 function handleError(e: unknown): never {
   if (e instanceof InvalidCookieError) {

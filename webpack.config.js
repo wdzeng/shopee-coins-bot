@@ -14,7 +14,7 @@ const versionPlugin = new webpack.DefinePlugin({ 'process.env.VERSION': JSON.str
 
 export default {
   mode: 'production',
-  entry: './src/index.ts',
+  entry: './src/cli/index.ts',
   output: {
     filename: 'index.cjs',
     path: outputDir,

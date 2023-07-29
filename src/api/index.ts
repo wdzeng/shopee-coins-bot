@@ -1,9 +1,8 @@
-import type { CheckinResponse } from '@/api-types/checkin'
-import type { CoinsResponse, UnknownCoinsResponse } from '@/api-types/coins'
-import type { SettingsResponse } from '@/api-types/settings'
-import { parseCookie } from '@/cookie'
-import { InvalidCookieError, UserNotLoggedInError } from '@/errors'
-import * as logger from '@/log'
+import { parseCookie } from '@/api/cookie'
+import { InvalidCookieError, UserNotLoggedInError } from '@/api/errors'
+import type { CheckinResponse } from '@/api/types/checkin'
+import type { CoinsResponse, UnknownCoinsResponse } from '@/api/types/coins'
+import type { SettingsResponse } from '@/api/types/settings'
 
 export interface CheckinHistory {
   amounts: [number, number, number, number, number, number, number]
@@ -80,7 +79,6 @@ export default class ShopeeBot {
 
   async getBalance(): Promise<number> {
     const coinsResponseBody = await this.getCoinsApiResponseBody()
-    logger.debug('%s', coinsResponseBody)
     return coinsResponseBody.coins
   }
 

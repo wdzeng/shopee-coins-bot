@@ -1,4 +1,4 @@
-import { InvalidCookieError } from './errors'
+import { InvalidCookieError } from '@/api/errors'
 
 export function parseCookie(cookie: string): Record<string, string> {
   return cookie.split(';').reduce<Record<string, string>>((acc, cookieString) => {

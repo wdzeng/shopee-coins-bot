@@ -12,7 +12,7 @@
   "type": "module",
   "scripts": {
     "build": "webpack",
-    "dev": "tsx src/index.ts",
+    "dev": "tsx src/cli/index.ts",
     "lint": "eslint src/ --ext .ts --fix --ignore-path .gitignore",
     "clean": "rm -rf dist"
   },
