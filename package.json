@@ -11,7 +11,7 @@
   "packageManager": "pnpm@8.6.9",
   "type": "module",
   "scripts": {
-    "build": "webpack",
+    "build": "./build.cjs",
     "dev": "tsx src/cli/index.ts",
     "lint": "eslint src/ --ext .ts --fix --ignore-path .gitignore",
     "clean": "rm -rf dist"
@@ -22,16 +22,13 @@
   },
   "devDependencies": {
     "@types/node": "^20.4.4",
+    "esbuild": "^0.18.17",
     "eslint": "^8.45.0",
     "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.3.4",
     "prettier": "^3.0.0",
     "ts-custom-error": "^3.3.1",
-    "ts-loader": "^9.4.4",
-    "tsconfig-paths-webpack-plugin": "^4.1.0",
     "tsx": "^3.12.7",
-    "typescript": "^5.1.6",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
+    "typescript": "^5.1.6"
   },
   "license": "MIT"
 }
