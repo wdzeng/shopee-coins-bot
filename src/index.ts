@@ -8,6 +8,7 @@ import ShopeeBot, { type CheckinHistory } from '@/bot'
 import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/errors'
 import ExitCode from '@/exit-code'
 import * as logger from '@/log'
+import { version } from '@/utils/version'
 
 function handleError(e: unknown): never {
   if (e instanceof InvalidCookieError) {
@@ -64,8 +65,10 @@ function readCookieFromFile(path: string): string {
   return cookie
 }
 
-// Version number will be replaced by webpack during build.
-const version: string = process.env.VERSION ?? 'Development'
+interface GlobalOptions {
+  cookieString: string
+}
+
 program
   .name(`docker run hyperbola/shopee-coins-bot:${version}`)
   .description('Give me Shopee coins!')
@@ -81,13 +84,12 @@ program
     }
   })
 
-let cookie: string
 program
   .requiredOption('-c, --cookie <FILE>', 'path to cookie file')
-  .hook('preAction', (thisCommand) => {
+  .hook('preAction', (thisCommand, actionCommand) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const cookieOption: string = thisCommand.opts().cookie
-    cookie = readCookieFromFile(cookieOption)
+    actionCommand.opts().cookieString = readCookieFromFile(cookieOption)
   })
 
 // Disallow any unused argument.
@@ -102,10 +104,10 @@ program
   .command('checkin')
   .description('Checkin to get Shopee coins')
   .option('-f --force', 'force checkin even if already checked in', false)
-  .action(async (options) => {
+  .action(async (options: GlobalOptions & { force: boolean }) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const force = options.force
-    const bot = new ShopeeBot(cookie)
+    const bot = new ShopeeBot(options.cookieString)
     let result: number | false
 
     try {
@@ -133,8 +135,8 @@ program
 program
   .command('balance')
   .description('Get my Shopee coins balance')
-  .action(async () => {
-    const bot = new ShopeeBot(cookie)
+  .action(async (options: GlobalOptions) => {
+    const bot = new ShopeeBot(options.cookieString)
     let balance: number
     try {
       balance = await bot.getBalance()
@@ -148,8 +150,8 @@ program
   .command('history')
   .description('Get my Shopee coins checkin history')
   .addOption(new Option('-o, --output [format]').choices(['raw', 'json']).default('raw'))
-  .action(async (options) => {
-    const bot = new ShopeeBot(cookie)
+  .action(async (options: GlobalOptions & { output: 'raw' | 'json' }) => {
+    const bot = new ShopeeBot(options.cookieString)
     let history: CheckinHistory
     try {
       history = await bot.getCheckinHistory()
@@ -158,7 +160,7 @@ program
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const outputFormat: 'raw' | 'json' = options.output
+    const outputFormat = options.output
     if (outputFormat === 'json') {
       console.log(JSON.stringify(history))
       process.exit(0)
@@ -183,8 +185,9 @@ program
 program
   .command('whoami')
   .description('Get my Shopee username')
-  .action(async () => {
-    const bot = new ShopeeBot(cookie)
+  .action(async (options: GlobalOptions) => {
+    logger.debug(options.cookieString)
+    const bot = new ShopeeBot(options.cookieString)
     let username
     try {
       username = await bot.getLoginUser()
