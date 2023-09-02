@@ -1,10 +1,8 @@
 // Response from API https://shopee.tw/mkt/coins/api/v2/settings
 
-export interface SettingsResponse {
-  code: number
-  msg: string
-  data?: Data
-}
+import type { ApiV2Response } from '@/api/v2-types'
+
+export type SettingsResponse = ApiV2Response<Data>
 
 interface Data {
   '@timestamp': Date

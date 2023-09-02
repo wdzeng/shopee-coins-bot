@@ -2,9 +2,9 @@ import assert from 'node:assert'
 
 import { parseCookie } from '@/api/cookie'
 import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/api/errors'
-import type { CheckinResponse } from '@/api/types/checkin'
-import type { CoinsResponse } from '@/api/types/coins'
-import type { SettingsResponse } from '@/api/types/settings'
+import type { CoinsResponse } from '@/api/v1-types/coins'
+import type { CheckinResponse } from '@/api/v2-types/checkin'
+import type { SettingsResponse } from '@/api/v2-types/settings'
 
 export interface CheckinHistory {
   amounts: [number, number, number, number, number, number, number]

@@ -1,12 +1,10 @@
 // Response from API https://shopee.tw/mkt/coins/api/v2/checkin_new
 
-export interface CheckinResponse {
-  code: number
-  msg: string
-  data?: Data
-}
+import type { ApiV2Response } from '@/api/v2-types'
 
-export interface Data {
+export type CheckinResponse = ApiV2Response<Data>
+
+interface Data {
   '@timestamp': Date
   'check_in_day': number
   'checkin_list': [number, number, number, number, number, number, number] | null
