@@ -8,7 +8,8 @@
     "url": "https://blog.hyperbola.me"
   },
   "repository": "github:hyperbola/shopee-coins-bot",
-  "packageManager": "pnpm@8.6.9",
+  "license": "MIT",
+  "packageManager": "pnpm@8.7.1",
   "type": "module",
   "scripts": {
     "build": "./build.cjs",
@@ -18,17 +19,28 @@
   },
   "dependencies": {
     "chalk": "^5.3.0",
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20.4.4",
-    "esbuild": "^0.18.17",
-    "eslint": "^8.45.0",
-    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.3.4",
-    "prettier": "^3.0.0",
-    "ts-custom-error": "^3.3.1",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6"
+    "@types/node": "^20.5.8",
+    "esbuild": "^0.19.2",
+    "eslint": "^8.48.0",
+    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.4.4",
+    "prettier": "^3.0.3",
+    "tsx": "^3.12.8",
+    "typescript": "^5.2.2"
   },
-  "license": "MIT"
+  "pnpm": {
+    "overrides": {
+      "array-includes": "npm:@nolyfill/array-includes@latest",
+      "array.prototype.findlastindex": "npm:@nolyfill/array.prototype.findlastindex@latest",
+      "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@latest",
+      "array.prototype.flatmap": "npm:@nolyfill/array.prototype.flatmap@latest",
+      "has": "npm:@nolyfill/has@latest",
+      "object.fromentries": "npm:@nolyfill/object.fromentries@latest",
+      "object.groupby": "npm:@nolyfill/object.groupby@latest",
+      "object.values": "npm:@nolyfill/object.values@latest"
+    }
+  }
 }
