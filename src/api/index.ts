@@ -1,7 +1,9 @@
+import assert from 'node:assert'
+
 import { parseCookie } from '@/api/cookie'
-import { InvalidCookieError, UserNotLoggedInError } from '@/api/errors'
+import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/api/errors'
 import type { CheckinResponse } from '@/api/types/checkin'
-import type { CoinsResponse, UnknownCoinsResponse } from '@/api/types/coins'
+import type { CoinsResponse } from '@/api/types/coins'
 import type { SettingsResponse } from '@/api/types/settings'
 
 export interface CheckinHistory {
@@ -12,6 +14,21 @@ export interface CheckinHistory {
 
 export default class ShopeeBot {
   constructor(private readonly cookie: string) {}
+
+  private handleErrorResponse(responseData: object): void {
+    if (
+      'code' in responseData &&
+      typeof responseData.code === 'number' &&
+      'msg' in responseData &&
+      typeof responseData.msg === 'string'
+    ) {
+      if (responseData.code === 401) {
+        throw new UserNotLoggedInError()
+      } else if (responseData.code !== 0) {
+        throw new ShopeeError(responseData.code, `Shopee server: ${responseData.msg}`)
+      }
+    }
+  }
 
   private async getCoinsApiResponseBody(): Promise<CoinsResponse> {
     const url = 'https://shopee.tw/mkt/coins/api/v1/cs/coins'
@@ -34,16 +51,8 @@ export default class ShopeeBot {
       }
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const result: UnknownCoinsResponse = await fetchResult.json()
-    if ('code' in result) {
-      if (result.code === 401) {
-        throw new InvalidCookieError(`Shopee server: ${result.msg}`)
-      }
-
-      // Unexpected error.
-      throw new Error(`Shopee server: ${result.msg}`)
-    }
-
+    const result: CoinsResponse = await fetchResult.json()
+    this.handleErrorResponse(result)
     return result
   }
 
@@ -74,6 +83,8 @@ export default class ShopeeBot {
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const responseBody: CheckinResponse = await fetchResult.json()
+    this.handleErrorResponse(responseBody)
+    assert('data' in responseBody)
     return responseBody.data.success ? responseBody.data.increase_coins : false
   }
 
@@ -104,6 +115,8 @@ export default class ShopeeBot {
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body: SettingsResponse = await fetchResult.json()
+    this.handleErrorResponse(body)
+    assert('data' in body)
 
     if (body.data.userid === '-1') {
       throw new UserNotLoggedInError()

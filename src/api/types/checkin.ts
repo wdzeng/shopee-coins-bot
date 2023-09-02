@@ -3,7 +3,7 @@
 export interface CheckinResponse {
   code: number
   msg: string
-  data: Data
+  data?: Data
 }
 
 export interface Data {

@@ -3,7 +3,7 @@
 export interface SettingsResponse {
   code: number
   msg: string
-  data: Data
+  data?: Data
 }
 
 interface Data {

@@ -8,7 +8,6 @@ export class UserNotLoggedInError extends CustomError {
   }
 }
 
-// TODO: Use ShopeeError if status code is 2XX but response body contains error messages.
 export class ShopeeError extends CustomError {
   constructor(
     public readonly code: number,
