@@ -13,7 +13,14 @@ module.exports = {
     project: './tsconfig.json'
   },
   rules: {
-    // Your custom rules go here ...
     'prettier/prettier': 'warn'
-  }
+  },
+  overrides: [
+    {
+      files: ['src/cli/index.ts'],
+      rules: {
+        'unicorn/no-process-exit': 'off',
+      }
+    }
+  ]
 }

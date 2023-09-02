@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import fs from 'node:fs'
 
 import { Option, program } from 'commander'
