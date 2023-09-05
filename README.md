@@ -5,10 +5,12 @@
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
 [![ghcr](https://badgen.net/badge/icon/ghcr/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)
 
-> [!IMPORTANT]  
-> 蝦皮簽到機器人 v2 還在實驗中，預計九月釋出。目前仍在使用的 v1
-> 請至[這裡](https://github.com/wdzeng/shopee-coins-bot/tree/main)。如果你使用 v2
-> 機器人遇到任何問題，歡迎到 [Issues](https://github.com/wdzeng/shopee-coins-bot/issues) 回報！
+> [!NOTE]  
+> 這是剛釋出的 v2 蝦皮簽到機器人。舊版的 v1 文件在[這裡](https://github.com/wdzeng/shopee-coins-bot/tree/archives/v1)，已不再維護。
+
+> [!NOTE]  
+> 如果你使用機器人遇到任何問題，歡迎到 [Issues](https://github.com/wdzeng/shopee-coins-bot/issues)
+> 回報！
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
