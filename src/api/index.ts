@@ -1,5 +1,7 @@
 import assert from 'node:assert'
 
+import axios from 'axios'
+
 import { parseCookie } from '@/api/cookie'
 import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/api/errors'
 import type { CoinsResponse } from '@/api/v1-types/coins'
@@ -32,10 +34,7 @@ export default class ShopeeBot {
 
   private async getCoinsApiResponseBody(): Promise<CoinsResponse> {
     const url = 'https://shopee.tw/mkt/coins/api/v1/cs/coins'
-    const fetchResult = await fetch(url, {
-      method: 'GET',
-      // eslint-disable-next-line unicorn/no-null
-      body: null,
+    const response = await axios<CoinsResponse>(url, {
       headers: {
         'accept': 'application/json',
         'accept-language': 'en-US,en;q=0.8',
@@ -50,10 +49,8 @@ export default class ShopeeBot {
         'sec-fetch-site': 'same-origin'
       }
     })
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const result: CoinsResponse = await fetchResult.json()
-    this.handleErrorResponse(result)
-    return result
+    this.handleErrorResponse(response.data)
+    return response.data
   }
 
   async checkin(): Promise<number | false> {
@@ -64,9 +61,7 @@ export default class ShopeeBot {
     }
     const dfp = decodeURIComponent(cookieItems.shopee_webUnique_ccd)
     const requestBody = JSON.stringify({ dfp })
-    const fetchResult = await fetch(checkinApiUrl, {
-      method: 'POST',
-      body: requestBody,
+    const response = await axios.post<CheckinResponse>(checkinApiUrl, requestBody, {
       headers: {
         'accept': 'application/json',
         'accept-language': 'en-US,en;q=0.8',
@@ -81,11 +76,9 @@ export default class ShopeeBot {
         'sec-fetch-site': 'same-origin'
       }
     })
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const responseBody: CheckinResponse = await fetchResult.json()
-    this.handleErrorResponse(responseBody)
-    assert('data' in responseBody)
-    return responseBody.data.success ? responseBody.data.increase_coins : false
+    this.handleErrorResponse(response.data)
+    assert('data' in response.data)
+    return response.data.data.success ? response.data.data.increase_coins : false
   }
 
   async getBalance(): Promise<number> {
@@ -95,10 +88,7 @@ export default class ShopeeBot {
 
   async getCheckinHistory(): Promise<CheckinHistory> {
     const settingsApiUrl = 'https://shopee.tw/mkt/coins/api/v2/settings'
-    const fetchResult = await fetch(settingsApiUrl, {
-      method: 'GET',
-      // eslint-disable-next-line unicorn/no-null
-      body: null,
+    const response = await axios<SettingsResponse>(settingsApiUrl, {
       headers: {
         'accept': 'application/json',
         'accept-language': 'en-US,en;q=0.8',
@@ -113,24 +103,22 @@ export default class ShopeeBot {
         'sec-fetch-site': 'same-origin'
       }
     })
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const body: SettingsResponse = await fetchResult.json()
-    this.handleErrorResponse(body)
-    assert('data' in body)
+    this.handleErrorResponse(response.data)
+    assert('data' in response.data)
 
-    if (body.data.userid === '-1') {
+    if (response.data.data.userid === '-1') {
       throw new UserNotLoggedInError()
     }
 
-    if (body.data.checkin_list.length < 7) {
+    if (response.data.data.checkin_list.length < 7) {
       throw new Error('Unexpected checkin history length')
     }
 
     return {
       // @ts-expect-error: length of `checkin_list` is always 7
-      amounts: body.data.checkin_list.slice(0, 7),
-      checkedInToday: body.data.checked_in_today,
-      todayIndex: body.data.today_index - 1
+      amounts: response.data.data.checkin_list.slice(0, 7),
+      checkedInToday: response.data.data.checked_in_today,
+      todayIndex: response.data.data.today_index - 1
     }
   }
 
