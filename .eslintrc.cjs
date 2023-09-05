@@ -17,7 +17,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/cli/index.ts'],
+      files: ['src/cli/**/*.ts'],
       rules: {
         'unicorn/no-process-exit': 'off',
       }

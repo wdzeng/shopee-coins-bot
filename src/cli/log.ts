@@ -1,5 +1,11 @@
 import chalk from 'chalk'
 
+let quiet = false
+
+export function setQuiet(value: boolean): void {
+  quiet = value
+}
+
 function isTruthy(value: string | undefined): value is string {
   return value !== undefined && value !== '' && value !== '0' && value !== 'false'
 }
@@ -11,7 +17,7 @@ export function debug(format: string, ...msg: unknown[]): void {
 }
 
 export function info(format: string, ...msg: unknown[]): void {
-  if (isTruthy(process.env.DEBUG) || !isTruthy(process.env.QUIET)) {
+  if (isTruthy(process.env.DEBUG) || !quiet) {
     console.error(format, ...msg)
   }
 }

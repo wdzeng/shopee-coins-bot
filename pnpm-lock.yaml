@@ -15,6 +15,9 @@ overrides:
   object.values: npm:@nolyfill/object.values@latest
 
 dependencies:
+  '@commander-js/extra-typings':
+    specifier: ^11.0.0
+    version: 11.0.0(commander@11.0.0)
   axios:
     specifier: ^1.5.0
     version: 1.5.0
@@ -78,6 +81,14 @@ packages:
       chalk: 2.4.2
       js-tokens: 4.0.0
     dev: true
+
+  /@commander-js/extra-typings@11.0.0(commander@11.0.0):
+    resolution: {integrity: sha512-06ol6Kn5gPjFY6v0vWOZ84nQwyqhZdaeZCHYH3vhwewjpOEjniF1KHZxh18887G3poWiJ8qyq5pb6ANuiddfPQ==}
+    peerDependencies:
+      commander: 11.0.x
+    dependencies:
+      commander: 11.0.0
+    dev: false
 
   /@esbuild-kit/cjs-loader@2.4.2:
     resolution: {integrity: sha512-BDXFbYOJzT/NBEtp71cvsrGPwGAMGRB/349rwKuoxNSiKjPraNNnlK6MIIabViCjqZugu6j+xeMDlEkWdHHJSg==}
