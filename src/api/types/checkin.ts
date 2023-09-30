@@ -1,8 +1,9 @@
-// Response from API https://shopee.tw/mkt/coins/api/v2/checkin_new
+import type { V2ResponseData } from '@/api/types'
 
-import type { ApiV2Response } from '@/api/v2-types'
-
-export type CheckinResponse = ApiV2Response<Data>
+/**
+ * The checkin API (https://shopee.tw/mkt/coins/api/v2/checkin_new) response data type.
+ */
+export type CheckinResponseData = V2ResponseData<Data>
 
 interface Data {
   '@timestamp': Date

@@ -1,4 +1,3 @@
-import assert from 'node:assert'
 import fs from 'node:fs'
 
 import { handleError } from '@/cli/error'
@@ -37,6 +36,8 @@ export function loadCookie(path: string): void {
 }
 
 export function getCookie(): string {
-  assert(loadedCookie !== undefined)
+  if (loadedCookie === undefined) {
+    throw new Error('Please load cookie first.')
+  }
   return loadedCookie
 }

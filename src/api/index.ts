@@ -1,12 +1,15 @@
-import assert from 'node:assert'
-
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 
 import { parseCookie } from '@/api/cookie'
-import { InvalidCookieError, ShopeeError, UserNotLoggedInError } from '@/api/errors'
-import type { CoinsResponse } from '@/api/v1-types/coins'
-import type { CheckinResponse } from '@/api/v2-types/checkin'
-import type { SettingsResponse } from '@/api/v2-types/settings'
+import {
+  InvalidCookieError,
+  UnexpectedResponseError,
+  handleErrorResponse,
+  validateV2ApiResponseData
+} from '@/api/errors'
+import type { CheckinResponseData } from '@/api/types/checkin'
+import type { CoinsResponseData } from '@/api/types/coins'
+import type { SettingsResponseData } from '@/api/types/settings'
 
 export interface CheckinHistory {
   amounts: [number, number, number, number, number, number, number]
@@ -17,42 +20,35 @@ export interface CheckinHistory {
 export default class ShopeeBot {
   constructor(private readonly cookie: string) {}
 
-  private handleErrorResponse(responseData: object): void {
-    if (
-      'code' in responseData &&
-      typeof responseData.code === 'number' &&
-      'msg' in responseData &&
-      typeof responseData.msg === 'string'
-    ) {
-      if (responseData.code === 401) {
-        throw new UserNotLoggedInError()
-      } else if (responseData.code !== 0) {
-        throw new ShopeeError(responseData.code, `Shopee server: ${responseData.msg}`)
-      }
+  private async getCoinsApiResponseBody(): Promise<CoinsResponseData> {
+    const url = 'https://shopee.tw/mkt/coins/api/v1/cs/coins'
+    const headers = {
+      'accept': 'application/json',
+      'accept-language': 'en-US,en;q=0.8',
+      'cache-control': 'no-cache',
+      'cookie': this.cookie,
+      'pragma': 'no-cache',
+      'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin'
+    }
+
+    try {
+      const response = await axios<CoinsResponseData>(url, { headers })
+      return response.data
+    } catch (e: unknown) {
+      handleErrorResponse(e)
     }
   }
 
-  private async getCoinsApiResponseBody(): Promise<CoinsResponse> {
-    const url = 'https://shopee.tw/mkt/coins/api/v1/cs/coins'
-    const response = await axios<CoinsResponse>(url, {
-      headers: {
-        'accept': 'application/json',
-        'accept-language': 'en-US,en;q=0.8',
-        'cache-control': 'no-cache',
-        'cookie': this.cookie,
-        'pragma': 'no-cache',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin'
-      }
-    })
-    this.handleErrorResponse(response.data)
-    return response.data
-  }
-
+  /**
+   * Do checkin.
+   *
+   * @returns the amount of coins you get, or `false` if you have already checked in today.
+   */
   async checkin(): Promise<number | false> {
     const checkinApiUrl = 'https://shopee.tw/mkt/coins/api/v2/checkin_new'
     const cookieItems = parseCookie(this.cookie)
@@ -61,57 +57,69 @@ export default class ShopeeBot {
     }
     const dfp = decodeURIComponent(cookieItems.shopee_webUnique_ccd)
     const requestBody = JSON.stringify({ dfp })
-    const response = await axios.post<CheckinResponse>(checkinApiUrl, requestBody, {
-      headers: {
-        'accept': 'application/json',
-        'accept-language': 'en-US,en;q=0.8',
-        'cache-control': 'no-cache',
-        'content-type': 'application/json;charset=UTF-8',
-        'cookie': this.cookie,
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin'
-      }
-    })
-    this.handleErrorResponse(response.data)
-    assert('data' in response.data)
+
+    let response
+    const headers = {
+      'accept': 'application/json',
+      'accept-language': 'en-US,en;q=0.8',
+      'cache-control': 'no-cache',
+      'content-type': 'application/json;charset=UTF-8',
+      'cookie': this.cookie,
+      'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin'
+    }
+    try {
+      response = await axios.post<CheckinResponseData>(checkinApiUrl, requestBody, { headers })
+    } catch (e: unknown) {
+      handleErrorResponse(e)
+    }
+
+    validateV2ApiResponseData(response.data)
     return response.data.data.success ? response.data.data.increase_coins : false
   }
 
+  /**
+   * Get your balance of coins.
+   *
+   * @returns the balance of coins.
+   */
   async getBalance(): Promise<number> {
-    const coinsResponseBody = await this.getCoinsApiResponseBody()
-    return coinsResponseBody.coins
+    const data = await this.getCoinsApiResponseBody()
+    return data.coins
   }
 
   async getCheckinHistory(): Promise<CheckinHistory> {
     const settingsApiUrl = 'https://shopee.tw/mkt/coins/api/v2/settings'
-    const response = await axios<SettingsResponse>(settingsApiUrl, {
-      headers: {
-        'accept': 'application/json',
-        'accept-language': 'en-US,en;q=0.8',
-        'cache-control': 'no-cache',
-        'cookie': this.cookie,
-        'pragma': 'no-cache',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin'
-      }
-    })
-    this.handleErrorResponse(response.data)
-    assert('data' in response.data)
-
-    if (response.data.data.userid === '-1') {
-      throw new UserNotLoggedInError()
+    const headers = {
+      'accept': 'application/json',
+      'accept-language': 'en-US,en;q=0.8',
+      'cache-control': 'no-cache',
+      'cookie': this.cookie,
+      'pragma': 'no-cache',
+      'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin'
     }
 
+    let response: AxiosResponse<SettingsResponseData>
+    try {
+      response = await axios<SettingsResponseData>(settingsApiUrl, { headers })
+    } catch (e: unknown) {
+      handleErrorResponse(e)
+    }
+
+    validateV2ApiResponseData(response.data)
+
     if (response.data.data.checkin_list.length < 7) {
-      throw new Error('Unexpected checkin history length')
+      // Unexpected checkin history length.
+      throw new UnexpectedResponseError(response.data.code, 'Unexpected checkin history length.')
     }
 
     return {
@@ -123,10 +131,7 @@ export default class ShopeeBot {
   }
 
   async getLoginUser(): Promise<string> {
-    const body = await this.getCoinsApiResponseBody()
-    if (body.userid === '-1') {
-      throw new UserNotLoggedInError()
-    }
-    return body.username
+    const data = await this.getCoinsApiResponseBody()
+    return data.username
   }
 }
