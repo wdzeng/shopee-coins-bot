@@ -4,13 +4,37 @@ on:
   workflow_dispatch: ~
   push:
     branches:
+      - dev
       - main
     paths:
       - src/**
+  schedule:
+    - cron: '0 22 * * 1'  # 06:00 AM +08:00 every Monday
 
 jobs:
+  unittests:
+    name: Run unittests
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+      - name: Run unittests
+        run: pnpm test
+
   build:
     name: Build project and push image to Dockerhub and Github Container Registry
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/head/main') || github.event_name == 'workflow_dispatch' }}
+    needs:
+      - unittests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,7 +57,7 @@ jobs:
 
   tag:
     name: Add tags to repository
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/head/main' }}
     needs:
       - build
     runs-on: ubuntu-latest
@@ -47,8 +71,6 @@ jobs:
         run: |
           git tag -f ${{ steps.version.outputs.major }} main
           git tag -f ${{ steps.version.outputs.minor }} main
-          git tag -f ${{ steps.version.outputs.version }} main
-          git push -f origin \
-            ${{ steps.version.outputs.major }} \
-            ${{ steps.version.outputs.minor }} \
-            ${{ steps.version.outputs.version }}
+          git tag ${{ steps.version.outputs.version }} main
+          git push -f origin ${{ steps.version.outputs.major }} ${{ steps.version.outputs.minor }}
+          git push origin ${{ steps.version.outputs.version }}
