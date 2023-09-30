@@ -5,16 +5,17 @@
 [![docker](https://badgen.net/badge/icon/docker?icon=docker&label=)](https://hub.docker.com/repository/docker/hyperbola/shopee-coins-bot)
 [![ghcr](https://badgen.net/badge/icon/ghcr/black?icon=github&label=)](https://github.com/wdzeng/shopee-coins-bot/pkgs/container/shopee-coins-bot)
 
-> [!IMPORTANT]  
-> 蝦皮的登入驗證程序不時更新且越來越嚴格，維護登入步驟花費不少時間與力氣。正在實驗的新版
-> ([v2](https://github.com/wdzeng/shopee-coins-bot/tree/features/v2))
-> 機器人將不會再支援使用帳號密碼登入，而是改用與
-> [pinkoi 簽到機器人](https://github.com/wdzeng/pinkoi-coins-bot)同樣的人工給予 cookie
-> 的方式。新版機器人會在九月釋出，屆時當前 (v1) 的機器人將會停止維護。
+> [!NOTE]  
+> 這是剛釋出的 v2 蝦皮簽到機器人。舊版的 v1 文件在[這裡](https://github.com/wdzeng/shopee-coins-bot/tree/archives/v1)，已不再維護。
+
+> [!NOTE]  
+> 如果你使用機器人遇到任何問題，歡迎到 [Issues](https://github.com/wdzeng/shopee-coins-bot/issues)
+> 回報！
 
 💰💰 簽到蝦皮領蝦幣 💰💰
 
-這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/) 網站的使用者。其他國家沒試過。
+這支程式針對台灣的蝦皮用戶設計，也就是 [shopee.tw](https://shopee.tw/)
+網站的使用者。其他國家沒試過。
 
 ## 使用方式
 
@@ -30,100 +31,123 @@
 
 以下為映像最新的 tag。其他可用的 tag 請參考 Docker Hub 或 GitHub Container Registry 頁面。
 
-- `latest`, `1`, `1.3`, `1.3.1`
+- `edge`
 
-### 使用說明
+## 使用說明
 
 傳入 `--help` 可以印出使用說明。
 
 ```sh
-docker run hyperbola/shopee-coins-bot:1 --help
+docker run hyperbola/shopee-coins-bot:edge --help
 ```
 
-### 帳號密碼登入
+機器人支援四個指令。
 
-第一次使用時，需要提供蝦皮帳號密碼，並且強烈建議設定機器人登入後儲存 cookie
-的位置，以備未來機器人能夠執行自動登入。如果你不指定一個 cookie 的位置，那未來每次登入都會需要帳號與密碼。
+- `whoami`: 顯示你的蝦皮帳號。這通常是用來測試 cookie 是否可用。
+- `checkin`: 進行簽到。
+- `balance`: 顯示你的蝦幣餘額。
+- `history`: 顯示你七天內的簽到記錄。
 
-```sh
-docker run -v /path/to/somewhere:/cookie \
-    hyperbola/shopee-coins-bot:1 -u username -p password -c /cookie
-```
+### 通用參數
+
+這些參數適用於所有指令。
+
+- `-c`, `--cookie <FILE>`: cookie 檔案；所有指令必填
+- `-q`, `--quiet`: 不要印出提示訊息（仍會印出警告與錯誤訊息）；所有指令選填
+
+### 通用 Exit Code
+
+| Exit Code | 說明                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------- |
+| `0`       | 指令成功                                                                                                      |
+| `2`       | Cookie 無效；這通常是人工錯誤，像是複製貼上 cookie 時多貼或少貼了一些東西。                                   |
+| `3`       | 登入失敗；這通常是自然錯誤，像是 cookie 過期。                                                                |
+| `87`      | 參數不合法。                                                                                                  |
+| `255`     | 未知錯誤。有可能是 Bug；如果無法排解，請至 [Issues](https://github.com/wdzeng/shopee-coins-bot/issues) 回報。 |
+
+## 準備 Cookie 檔案
+
+所有的指令都需要 cookie 才能執行。請參考[這份](./docs/how-to-get-cookie.md)說明，將 cookie
+複製貼上到一個檔案。
 
 > [!IMPORTANT]  
-> 機器人進行登入期間，你可能會收到來自 shopee 的 Email
-> 或手機驗證簡訊，其中會有一個驗證登入的連結。請在 10
-> 分鐘內進行驗證，在這期間機器人會等你。一旦你點了驗證簡訊後，機器人會立即繼續執行下去。
+> Cookie 是敏感資料，請妥善保存。
 
-### 自動登入
-
-如果之前有儲存過 cookie，用 cookie 登入即可，這樣就不會觸發簡訊驗證。
+然後你可以用 `-c` 或 `--cookie` 將 cookie 檔案餵給機器人，再用 `whoami`
+指令確認是否登入成功。如果成功，以下指令會印出你的帳號。
 
 ```sh
-docker run -v /path/to/somewhere:/cookie hyperbola/shopee-coins-bot:1 -c /cookie
+# 假設 cookie 檔案在 ~/.config/shopee/cookie
+docker run -v "$HOME/.config/shopee:/config" hyperbola/shopee-coins-bot:edge -c /config/cookie whoami
 ```
 
-## 參數
+為了讀取 cookie，所有的指令都會需要搭配 `-v <MOUNT_POINT>` 和
+`-c <FILE>`。為求精簡，以下所有範例中的指令將不列出 `-v` 和 `-c`。
 
-所有參數都是選填。
+## 簽到
 
-- `-u`, `--user <STRING>`: 蝦皮帳號；可以是手機、電子信箱或蝦皮 ID
-- ~~`-p`, `--pass <STRING>`: 蝦皮密碼~~ **DEPRECATED**
-- `-P`, `--path-to-pass <FILE>`: 密碼檔案
-- `-c`, `--cookie <FILE>`: cookie 檔案
-- ~~`-i`, `--ignore-password`: 不要儲存密碼~~ **DEPRECATED**
-- `-x`, `--no-sms`: 如果觸發簡訊驗證，直接令程式以失敗結束；預設為 `false`
-- `-y`, `--no-email`: 如果觸發電子郵件驗證，直接令程式以失敗結束；預設為 `false`
-- `-f`, `--force`: 如果今天已經領過蝦幣，令程式以成功作收；預設為 `false`
-- `-q`, `--quiet`: 不要印出訊息；但仍會印出警告與錯誤訊息
-- `-s`, `--screenshot <DIR>`: 簽到失敗時將螢幕截圖的儲存於指定資料夾下（圖檔檔名
-  為 screenshot.png）
-- `-V`, `--version`: 印出版本
-- `-h`, `--help`: 印出參數說明
+使用 `checkin` 指令進行簽到。
 
-如果你同時設定了帳號、密碼與 cookie，機器人會以下列順序嘗試登入：
+```shell
+docker run hyperbola/shopee-coins-bot:edge checkin
+```
 
-1. cookie
-2. 帳號與密碼
+### 簽到參數
 
-每次登入成功時，機器人就會將 cookie 更新至最新狀態。
+- `-f`, `--force`: 如果今天已經簽到過，不要回報錯誤。
 
-> [!IMPORTANT]  
-> Cookie 是機密資料，請妥善保存。
+**Exit Code：**
 
-Cookie 檔案的位置以下列優先順序決定。
+| Exit Code | 說明                                             |
+| --------- | ------------------------------------------------ |
+| `0`       | 簽到成功。                                       |
+| `1`       | 今日已簽到過；如果傳了 `--force`，就會改為 `0`。 |
 
-1. 環境變數 `COOKIE`
-2. 程式參數 `--cookie`
+## 餘額
 
-帳號以下列優先順序決定。
+使用 `balance` 指令顯示蝦幣餘額。以下範例顯示你有 87 個蝦幣。
 
-1. 環境變數 `USERNAME`
-2. 程式參數 `--user`
+```shell
+$ docker run hyperbola/shopee-coins-bot:edge balance
+87
+```
 
-密碼以下列優先順序決定。
+## 簽到記錄
 
-1. 環境變數 `PASSWORD`
-2. ~~程式參數 `--pass`~~ **DEPRECATED**
-3. 環境變數 `PATH_PASS`
-4. 程式參數 `--path-to-pass`
+使用 `history` 指令顯示蝦幣餘額。以下範例顯示你已經連續簽到三天，且今天已經簽到。
 
-## Exit Code
+```shell
+$ docker run hyperbola/shopee-coins-bot:edge history
+✅ 0.05
+✅ 0.10
+✅ 0.15 <
+⬜ 0.20
+⬜ 0.25
+⬜ 0.25
+⬜ 0.50
+```
 
-| Exit code | 解釋                                                              |
-| --------- | ----------------------------------------------------------------- |
-| 0         | 簽到成功。                                                        |
-| 1         | 今日已簽到。如果傳了 `--force` 參數，那就會改為回傳 0。           |
-| 2         | 需要簡訊驗證，但你傳了 `--no-sms` 參數。                          |
-| 3         | 機器人遇到拼圖遊戲。這通常是因為嘗試登入次數太多，被網站 ban 掉。 |
-| 4         | 操作逾時。                                                        |
-| ~~5~~     | ~~觸發電子郵件驗證。機器人尚不支援。~~ **DEPRECATED**             |
-| 6         | 使用者進行簡訊驗證時選擇拒絕機器人登入。                          |
-| 7         | 需要電子郵件驗證，但你傳了 `--no-email` 參數。                    |
-| 69        | 嘗試登入次數太多被 ban。                                          |
-| 77        | 參數不合法。                                                      |
-| 87        | 帳號或密碼錯誤。                                                  |
-| 88        | 不明錯誤。                                                        |
+如果你想分析 output，可以用 `--output json`，這樣印出的結果比較好分析。
+
+```sh
+$ docker run hyperbola/shopee-coins-bot:edge history --output json
+{"amounts":[0.05,0.1,0.15,0.2,0.25,0.25,0.5],"checkedInToday":true,"todayIndex":2}
+```
+
+### 簽到記錄參數
+
+- `-o`, `--output`: Output 的格式，必須是 `raw` 或 `json` 其中之一。選填；預設為 `raw`。
+
+### 簽到記錄 Output
+
+如果 `--output` 是 `raw`，會印出人眼可讀的結果。
+
+如果 `--output` 是 `json`，其結果格式如下。
+
+- `.amounts` (`number[]`): 含有七個數字的陣列，分別表示七天來每天可領的蝦幣數量。
+- `.checkedInToday` (`boolean`): 今天是否已經簽到。
+- `.todayIndex` (`number`): 今天是七天中的第幾天；此值為 0-based，亦即 `0` 表第一天、`1`
+  表第二天、依此類推。
 
 ## 姊妹機器人
 
